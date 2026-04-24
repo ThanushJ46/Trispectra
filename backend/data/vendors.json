@@ -1,0 +1,196 @@
+{
+    "city": "bengaluru",
+    "last_updated": "2026-04-24",
+    "vendors": [
+        {
+            "id": "v001",
+            "name": "E-Waste Recyclers India — Koramangala",
+            "categories": [
+                "e_waste",
+                "metal"
+            ],
+            "address": "47, 5th Block, Koramangala, Bengaluru - 560095",
+            "area": "Koramangala",
+            "lat": 12.9352,
+            "lng": 77.6245,
+            "phone": "+918022345678",
+            "accepts": [
+                "laptops",
+                "phones",
+                "batteries",
+                "PCBs",
+                "cables",
+                "TVs"
+            ],
+            "timing": "Mon–Sat, 9am–6pm",
+            "offers_pickup": true,
+            "min_pickup_kg": 5,
+            "notes": "Provides certificate of responsible recycling. Pays for bulk metal."
+        },
+        {
+            "id": "v002",
+            "name": "Attero Recycling — Whitefield Drop Point",
+            "categories": [
+                "e_waste"
+            ],
+            "address": "ITPL Main Road, Whitefield, Bengaluru - 560066",
+            "area": "Whitefield",
+            "lat": 12.9698,
+            "lng": 77.7499,
+            "phone": "+918066112233",
+            "accepts": [
+                "all electronics",
+                "batteries",
+                "appliances"
+            ],
+            "timing": "Mon–Fri, 10am–5pm",
+            "offers_pickup": false,
+            "notes": "Authorised e-waste recycler under MoEF&CC guidelines."
+        },
+        {
+            "id": "v003",
+            "name": "Kabadiwalla Connect — Indiranagar Hub",
+            "categories": [
+                "plastic",
+                "metal",
+                "paper",
+                "glass"
+            ],
+            "address": "12, CMH Road, Indiranagar, Bengaluru - 560038",
+            "area": "Indiranagar",
+            "lat": 12.9784,
+            "lng": 77.6408,
+            "phone": "+917760012345",
+            "accepts": [
+                "PET bottles",
+                "HDPE",
+                "aluminium cans",
+                "cardboard",
+                "glass bottles"
+            ],
+            "timing": "Daily, 8am–7pm",
+            "offers_pickup": true,
+            "min_pickup_kg": 2,
+            "notes": "App-based pickup available. Competitive rates for clean dry plastic."
+        },
+        {
+            "id": "v004",
+            "name": "Goonj — Bengaluru City Collection Centre",
+            "categories": [
+                "clothes",
+                "textiles",
+                "footwear"
+            ],
+            "address": "No. 10, 2nd Cross, Sadashivanagar, Bengaluru - 560080",
+            "area": "Sadashivanagar",
+            "lat": 13.0051,
+            "lng": 77.5897,
+            "phone": "+918023567890",
+            "accepts": [
+                "clothes",
+                "bedsheets",
+                "towels",
+                "footwear",
+                "bags"
+            ],
+            "timing": "Mon–Sat, 10am–5pm",
+            "offers_pickup": false,
+            "notes": "Goonj upcycles textiles into rural utility products. Clean, dry items only."
+        },
+        {
+            "id": "v005",
+            "name": "Daily Dump — Compost Drop & Pick",
+            "categories": [
+                "organic",
+                "wet_waste"
+            ],
+            "address": "Jayanagar 4th Block, Bengaluru - 560041",
+            "area": "Jayanagar",
+            "lat": 12.9249,
+            "lng": 77.5938,
+            "phone": "+919900112233",
+            "accepts": [
+                "vegetable peels",
+                "cooked food",
+                "garden waste",
+                "paper towels"
+            ],
+            "timing": "Tue & Fri, 8am–11am (drop-off days)",
+            "offers_pickup": false,
+            "notes": "Community composting initiative. Finished compost available free for residents."
+        },
+        {
+            "id": "v006",
+            "name": "ScrapUncle — Pan-Bengaluru Pickup",
+            "categories": [
+                "metal",
+                "plastic",
+                "paper",
+                "e_waste"
+            ],
+            "address": "Online booking — serves all Bengaluru",
+            "area": "All Areas",
+            "lat": 12.9716,
+            "lng": 77.5946,
+            "phone": "+919611223344",
+            "accepts": [
+                "all scrap",
+                "old appliances",
+                "metal",
+                "plastic",
+                "paper"
+            ],
+            "timing": "Daily, 7am–8pm",
+            "offers_pickup": true,
+            "min_pickup_kg": 1,
+            "notes": "Book pickup via app or WhatsApp. Real-time rate quotes provided.",
+            "app_url": "https://www.scrapuncle.com"
+        },
+        {
+            "id": "v007",
+            "name": "Bangalore Battery Recyclers — Peenya",
+            "categories": [
+                "batteries",
+                "e_waste"
+            ],
+            "address": "Peenya Industrial Area, Phase 2, Bengaluru - 560058",
+            "area": "Peenya",
+            "lat": 13.0298,
+            "lng": 77.5187,
+            "phone": "+918023001122",
+            "accepts": [
+                "lead-acid batteries",
+                "lithium-ion",
+                "AA/AAA cells",
+                "UPS batteries"
+            ],
+            "timing": "Mon–Sat, 9am–5pm",
+            "offers_pickup": true,
+            "min_pickup_kg": 10,
+            "notes": "Specialised battery recycling. Hazardous waste handling certified."
+        },
+        {
+            "id": "v008",
+            "name": "Hasiru Dala — Waste Picker Cooperative",
+            "categories": [
+                "plastic",
+                "paper",
+                "metal",
+                "glass",
+                "e_waste"
+            ],
+            "address": "Ragigudda, Jayanagar, Bengaluru - 560011",
+            "area": "Jayanagar",
+            "lat": 12.9256,
+            "lng": 77.6000,
+            "phone": "+919482100200",
+            "accepts": [
+                "all dry recyclables"
+            ],
+            "timing": "Mon–Sat, 9am–5pm",
+            "offers_pickup": true,
+            "min_pickup_kg": 0,
+            "notes": "Social enterprise employing waste pickers. 100% of recyclables formally processed."
+        }
+    ]
+}
