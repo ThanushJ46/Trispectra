@@ -138,9 +138,7 @@ class AnalysisResult(BaseModel):
         if self.has_ewaste != expected_has_ewaste:
             raise ValueError("has_ewaste must match the detected items")
 
-        expected_has_hazardous = any(
-            item.waste_category == WasteCategory.hazardous for item in self.items
-        )
+        expected_has_hazardous = any(item.is_hazardous for item in self.items)
         if self.has_hazardous != expected_has_hazardous:
             raise ValueError("has_hazardous must match the detected items")
 

@@ -7,7 +7,7 @@ from routers.vision import router as vision_router
 
 app = FastAPI(
     title="WasteWise Vision API",
-    description="AI-powered waste classification using Gemini 1.5 Pro Vision.",
+    description="AI-powered waste classification using local YOLOv11 detection.",
     version="0.1.0",
 )
 
