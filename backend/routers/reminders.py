@@ -91,6 +91,19 @@ def schedule_reminders(body: ScheduleRequest):
     }
 
 
+@router.get("/schedule")
+def get_global_schedule():
+    """Return the global checkpoint schedule."""
+    return {
+        "schedule": [
+            {"day": 1, "title": "Start composting"},
+            {"day": 3, "title": "Turn the pile"},
+            {"day": 7, "title": "Check moisture"},
+            {"day": 14, "title": "Add dry material"},
+            {"day": 21, "title": "Compost ready check"}
+        ]
+    }
+
 @router.get("/{uid}")
 def get_reminder_schedule(uid: str):
     """View a user's scheduled reminders and journey status."""

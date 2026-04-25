@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+// Use empty string to rely on Vite's proxy, allowing mobile access to work correctly
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export async function apiRequest(path, options = {}, timeoutMs = 30000) {
   // Ensure path starts with /

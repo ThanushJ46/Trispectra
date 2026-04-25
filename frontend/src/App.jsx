@@ -267,33 +267,115 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
     </div>
   );
 }
-function ScannerScreen({onNav,onChat,fileRef}){
-return(<div className="absolute inset-0 z-10" style={{background:'linear-gradient(135deg,#1a2e1e 0%,#2d4a2d 40%,#1e3a2e 100%)'}}>
-<div className="absolute inset-0" style={{backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")"}}/>
-<div className="absolute flex items-center justify-center" style={{top:60,left:0,right:0,bottom:320}}><div className="relative" style={{width:220,height:220}}>
+function ScannerScreen({onNav, onChat, fileRef, onCapture}) {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [streamActive, setStreamActive] = useState(false);
+
+  useEffect(() => {
+    let stream = null;
+    const startCamera = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setStreamActive(true);
+        }
+      } catch (err) {
+        console.error("Error accessing camera: ", err);
+      }
+    };
+    startCamera();
+
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  const takeSnapshot = () => {
+    if (!videoRef.current || !canvasRef.current || !streamActive) return;
+    
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    let width = video.videoWidth;
+    let height = video.videoHeight;
+    const MAX_SIZE = 1024;
+    
+    if (width > height && width > MAX_SIZE) {
+      height *= MAX_SIZE / width;
+      width = MAX_SIZE;
+    } else if (height > MAX_SIZE) {
+      width *= MAX_SIZE / height;
+      height = MAX_SIZE;
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, width, height);
+    
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    onCapture(dataUrl);
+  };
+
+  return (
+    <div className="absolute inset-0 z-10 bg-black">
+      {/* Live Video Feed */}
+      <video 
+        ref={videoRef}
+        autoPlay 
+        playsInline 
+        muted 
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+
+      {/* Overlay UI */}
+      <div className="absolute inset-0 pointer-events-none" style={{background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)'}} />
+      
+      <div className="absolute flex items-center justify-center pointer-events-none" style={{top:60,left:0,right:0,bottom:320}}>
+        <div className="relative" style={{width:220,height:220}}>
+          <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]"/>
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-lg"/>
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-lg"/>
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-lg"/>
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-lg"/>
+          <div className="absolute left-0 right-0 h-[2px] bg-[#4ade80]/60 shadow-[0_0_8px_#4ade80]" style={{animation:'scanline 2s ease-in-out infinite alternate',top:'50%'}}/>
+        </div>
+      </div>
 <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]"/>
-<div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white rounded-tl-lg"/>
-<div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white rounded-tr-lg"/>
-<div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white rounded-bl-lg"/>
-<div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white rounded-br-lg"/>
-<div className="absolute left-0 right-0 h-[1px] bg-[#4ade80]/60" style={{animation:'scanline 2s ease-in-out infinite alternate',top:'50%'}}/>
-</div></div>
-<p className="absolute left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg" style={{bottom:298}}>Align waste inside the box</p>
-<div className="absolute left-0 right-0 flex justify-center" style={{bottom:248}}>
-<div className="bg-white/95 backdrop-blur rounded-full px-5 py-2.5 shadow-lg flex items-center gap-2"><I n="recycling" c="pulse-icon" s={{color:'#2D6A4F',fontSize:'18px',animation:'pulse-soft 1.5s ease-in-out infinite'}}/><span className="text-[#2D6A4F] font-bold text-sm">Detected: Plastic Bottle</span></div></div>
-<div className="absolute left-0 right-0 px-6" style={{bottom:190}}>
-<p className="text-white/50 text-xs text-center mb-2">── or ──</p>
-<button onClick={()=>fileRef.current&&fileRef.current.click()} className="bg-white/15 backdrop-blur border border-white/25 text-white rounded-[20px] px-5 py-2.5 w-full flex items-center justify-center gap-2 text-sm font-medium hover:bg-white/25 transition-colors"><I n="photo_library" s={{fontSize:'18px'}}/>Upload from Gallery</button>
-</div>
-<div className="absolute left-0 right-0 px-6 flex justify-between items-center" style={{bottom:100}}>
-<div className="w-14"/>
-<button onClick={()=>onNav('result')} className="w-[72px] h-[72px] rounded-full flex items-center justify-center border-4 border-white/30" style={{background:'#2D6A4F'}}><I n="center_focus_strong" c="text-white" s={{fontSize:'32px'}}/></button>
-<button onClick={onChat} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"><I n="forum" s={{color:'#2D6A4F',fontSize:'20px'}}/></button>
-</div>
-<div className="absolute bottom-0 left-0 right-0 h-20 bg-black/20 rounded-t-[24px] flex items-center justify-around px-2">
-{[{id:'home',i:'home',l:'HOME'},{id:'scanner',i:'center_focus_strong',l:'SCAN',a:true},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}].map(it=>(<button key={it.l} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5"><I n={it.i} f={!!it.a} s={{color:it.a?'#fff':'rgba(255,255,255,.5)',fontSize:'22px'}}/><span className="text-[10px] uppercase tracking-wider font-medium" style={{color:it.a?'#fff':'rgba(255,255,255,.5)'}}>{it.l}</span></button>))}
-</div>
-</div>);
+      <p className="absolute left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg" style={{bottom:298}}>Align waste inside the box</p>
+      
+      <div className="absolute left-0 right-0 px-6 pointer-events-auto" style={{bottom:190}}>
+        <p className="text-white/50 text-xs text-center mb-2">── or ──</p>
+        <button onClick={()=>fileRef.current&&fileRef.current.click()} className="bg-white/15 backdrop-blur border border-white/25 text-white rounded-[20px] px-5 py-2.5 w-full flex items-center justify-center gap-2 text-sm font-medium hover:bg-white/25 transition-colors"><I n="photo_library" s={{fontSize:'18px'}}/>Upload from Gallery</button>
+      </div>
+      
+      <div className="absolute left-0 right-0 px-6 flex justify-between items-center pointer-events-auto" style={{bottom:100}}>
+        <div className="w-14"/>
+        <button onClick={takeSnapshot} disabled={!streamActive} className="w-[72px] h-[72px] rounded-full flex items-center justify-center border-4 border-white/30 bg-[#2D6A4F] disabled:opacity-50">
+          <I n="camera_alt" c="text-white" s={{fontSize:'32px'}}/>
+        </button>
+        <button onClick={onChat} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"><I n="forum" s={{color:'#2D6A4F',fontSize:'20px'}}/></button>
+      </div>
+      
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-black/40 backdrop-blur rounded-t-[24px] flex items-center justify-around px-2 pointer-events-auto">
+        {[{id:'home',i:'home',l:'HOME'},{id:'scanner',i:'center_focus_strong',l:'SCAN',a:true},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}].map(it=>(
+          <button key={it.l} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5">
+            <I n={it.i} f={!!it.a} s={{color:it.a?'#fff':'rgba(255,255,255,.5)',fontSize:'22px'}}/>
+            <span className="text-[10px] uppercase tracking-wider font-medium" style={{color:it.a?'#fff':'rgba(255,255,255,.5)'}}>{it.l}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
@@ -656,7 +738,7 @@ function App() {
         {scr!=='scanner'&&<TopBar screen={scr} onBack={()=>nav(topBack)}/>}
         <div className="absolute inset-0 overflow-y-auto" style={{top:scr==='scanner'?0:0,bottom:0}}>
           {scr==='home'&&<HomeScreen onNav={nav} lang={lang} setLang={setLang} user={user} userStats={userStats}/>}
-          {scr==='scanner'&&<ScannerScreen onNav={nav} onChat={()=>setChat(true)} fileRef={fileRef}/>}
+          {scr==='scanner'&&<ScannerScreen onNav={nav} onChat={()=>setChat(true)} fileRef={fileRef} onCapture={(url)=>{setImgUrl(url);setScr('upload-preview');}}/>}
           {scr==='upload-preview'&&<UploadPreviewScreen onNav={nav} imgUrl={imgUrl} fileRef={fileRef} user={user} onResult={setAnalysisResult}/>}
           {scr==='result'&&<NewResultScreen onNav={nav} result={analysisResult} user={user}/>}
           {scr==='leaderboard'&&<LeaderboardScreen user={user} userStats={userStats}/>}
