@@ -63,7 +63,7 @@ def _get_db():
 
 def get_latest_analysis(uid: str) -> Optional[dict]:
     """Fetch the most recent waste analysis for a user."""
-    if uid == "demo-user": return None
+    if uid.startswith("demo-"): return None
     db = _get_db()
     if db is None: return None
     docs = (
@@ -83,7 +83,7 @@ def save_analysis(uid: str, analysis_data: dict) -> str:
     Save a waste analysis result to Firestore.
     Returns the document ID.
     """
-    if uid == "demo-user": return "mock_id"
+    if uid.startswith("demo-"): return "mock_id"
     db = _get_db()
     if db is None: return "mock_id"
     ref = db.collection("analyses").document(uid).collection("items").document()
@@ -145,7 +145,7 @@ def create_journey(uid: str, phone: str, start_date: datetime, waste_type: str, 
 
 def _add_points(uid: str, points: int, reason: str):
     """Internal helper — add points to leaderboard doc."""
-    if points <= 0 or uid == "demo-user":
+    if points <= 0 or uid.startswith("demo-"):
         return
     db = _get_db()
     if db is None: return
@@ -194,7 +194,7 @@ def get_leaderboard_top10() -> list:
 
 def get_user_stats(uid: str) -> Optional[dict]:
     """Return personal impact stats for a user."""
-    if uid == "demo-user":
+    if uid.startswith("demo-"):
         return {
             "uid": uid,
             "total_points": 1200,

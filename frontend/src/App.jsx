@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fbAuth, GoogleAuthProvider, signInWithPopup, firebaseEnabled } from './firebase.js';
 import { apiRequest } from './utils/api.js';
 import NewResultScreen from './components/ResultScreen.jsx';
@@ -20,7 +21,8 @@ if(screen==='leaderboard')return(<div className="absolute top-0 left-0 right-0 h
 return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="font-black text-2xl tracking-tighter" style={{color:'#2D6A4F'}}>WasteWise</span></div><div className="flex items-center gap-1"><button onClick={()=>onNav&&onNav('store')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"><I n="local_mall" s={{color:'#404943',fontSize:'22px'}}/></button><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div></div>);
 }
 function BottomNav({active,onNav}){
-const items=[{id:'home',i:'home',l:'Home'},{id:'vendors',i:'store',l:'Vendors'},{id:'scanner',i:'center_focus_strong',l:'Scan'},{id:'journey',i:'bar_chart',l:'Impact'},{id:'leaderboard',i:'leaderboard',l:'Board'}];
+  const { t } = useTranslation();
+const items=[{id:'home',i:'home',l:t('nav.home')},{id:'vendors',i:'store',l:t('nav.vendors')},{id:'scanner',i:'center_focus_strong',l:t('nav.scan')},{id:'journey',i:'bar_chart',l:t('nav.impact')},{id:'leaderboard',i:'leaderboard',l:t('nav.board')}];
 return(
 <div className="absolute bottom-0 left-0 right-0 z-30" style={{padding:'0 8px 10px'}}>
 <div style={{background:'rgba(255,255,255,0.72)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:26,border:'1px solid rgba(191,201,193,0.35)',boxShadow:'0 8px 32px rgba(0,0,0,0.08)'}} className="flex items-center justify-around py-2 px-1">
@@ -52,23 +54,34 @@ return(
 );
 }
 function ChatModal({ open, onClose }) {
-  const [msgs, setMsgs] = useState([{ f: 'b', t: "Hi! I can help you with composting tips, waste disposal guidance, or anything about WasteWise. What would you like to know?" }]);
+  const { t } = useTranslation();
+  const [msgs, setMsgs] = useState([{ f: 'b', t: t('chat.welcome') }]);
   const [inp, setInp] = useState(''); const ref = useRef(null);
   useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight }, [msgs]);
+  
+  const botReply = (m) => {
+    const l = m.toLowerCase();
+    if (l.includes('compost') || l.includes('खाद') || l.includes('ಗೊಬ್ಬರ')) return t('chat.reply_compost');
+    if (l.includes('ewaste') || l.includes('e-waste') || l.includes('ई-कचरा') || l.includes('ತ್ಯಾಜ್ಯ')) return t('chat.reply_ewaste');
+    if (l.includes('plastic') || l.includes('प्लास्टिक') || l.includes('ಪ್ಲಾಸ್ಟಿಕ್')) return t('chat.reply_plastic');
+    return t('chat.reply_default');
+  };
+
   const send = (x) => { const txt = x || inp; if (!txt.trim()) return; setMsgs(p => [...p, { f: 'u', t: txt }]); setInp(''); setTimeout(() => setMsgs(p => [...p, { f: 'b', t: botReply(txt) }]), 800); };
   if (!open) return null;
   return (<div className="absolute inset-0 z-50 flex items-end" onClick={onClose}><div className="absolute inset-0 bg-black/40" />
     <div className="relative bg-white rounded-t-[32px] p-6 w-full flex flex-col" style={{ maxHeight: '70%' }} onClick={e => e.stopPropagation()}>
-      <div className="flex items-center justify-between mb-4"><h2 className="font-bold text-xl">Ask WasteWise 🤖</h2><button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><I n="close" /></button></div>
+      <div className="flex items-center justify-between mb-4"><h2 className="font-bold text-xl">{t('chat.title')}</h2><button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><I n="close" /></button></div>
       <div ref={ref} className="flex-1 overflow-y-auto space-y-3 mb-4" style={{ minHeight: 200 }}>
         {msgs.map((m, i) => (<div key={i} className={`max-w-[85%] p-3 text-sm ${m.f === 'b' ? 'bg-[#e8f5e9] rounded-[16px] rounded-tl-sm text-[#151c22]' : 'bg-[#2d6a4f] text-white rounded-[16px] rounded-tr-sm ml-auto'}`}>{m.t}</div>))}
       </div>
-      <div className="flex gap-2 mb-3 overflow-x-auto pb-1">{["Composting tips", "E-waste near me", "Reduce plastic"].map(c => (<button key={c} onClick={() => send(c)} className="whitespace-nowrap bg-[#e8eef7] text-[#404943] text-xs px-3 py-2 rounded-full border border-[#bfc9c1]/50">{c}</button>))}</div>
-      <div className="flex gap-2"><input value={inp} onChange={e => setInp(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="Type a message..." className="flex-1 bg-[#f6f9ff] rounded-[20px] border border-[#bfc9c1] px-4 py-3 text-sm outline-none" /><button onClick={() => send()} className="bg-[#2d6a4f] text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><I n="send" s={{ fontSize: '18px' }} /></button></div>
+      <div className="flex gap-2 mb-3 overflow-x-auto pb-1">{t('chat.tips', { returnObjects: true }).map(c => (<button key={c} onClick={() => send(c)} className="whitespace-nowrap bg-[#e8eef7] text-[#404943] text-xs px-3 py-2 rounded-full border border-[#bfc9c1]/50">{c}</button>))}</div>
+      <div className="flex gap-2"><input value={inp} onChange={e => setInp(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder={t('chat.placeholder')} className="flex-1 bg-[#f6f9ff] rounded-[20px] border border-[#bfc9c1] px-4 py-3 text-sm outline-none" /><button onClick={() => send()} className="bg-[#2d6a4f] text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><I n="send" s={{ fontSize: '18px' }} /></button></div>
     </div></div>);
 }
 
 function LoginScreen({ onLogin }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -115,8 +128,8 @@ function LoginScreen({ onLogin }) {
 
       <div className="w-full z-10 space-y-4">
         <div className="text-center mb-8">
-          <h2 className="text-white font-bold text-xl">Welcome to the Journey</h2>
-          <p className="text-white/50 text-xs mt-1">Join thousands making an impact today.</p>
+          <h2 className="text-white font-bold text-xl">{t('login.welcome')}</h2>
+          <p className="text-white/50 text-xs mt-1">{t('login.join_msg')}</p>
         </div>
 
         {firebaseEnabled ? (
@@ -127,7 +140,7 @@ function LoginScreen({ onLogin }) {
           </button>
         ) : (
           <div className="bg-white/5 border border-white/10 rounded-[24px] p-4 text-center">
-            <p className="text-white/60 text-xs">Google Login is disabled. Use Guest mode.</p>
+            <p className="text-white/60 text-xs">{t('login.disabled_msg')}</p>
           </div>
         )}
 
@@ -141,6 +154,7 @@ function LoginScreen({ onLogin }) {
   );
 }
 function VendorsScreen() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -164,7 +178,7 @@ function VendorsScreen() {
 
   return (
     <div className="pt-20 px-5 pb-[100px]">
-      <h1 className="text-2xl font-bold text-[#151c22] mb-4">Collection Points</h1>
+      <h1 className="text-2xl font-bold text-[#151c22] mb-4">{t('vendors.title')}</h1>
 
       {/* Mock Map Section */}
       <div className="relative w-full h-48 rounded-[24px] overflow-hidden mb-5 border border-[#bfc9c1]/40 bg-[#e8eef7]">
@@ -175,7 +189,7 @@ function VendorsScreen() {
         }}></div>
         {/* Map UI Elements */}
         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#2d6a4f] shadow-sm">
-          📍 3 Vendors Nearby
+          📍 3 {t('vendors.vendors_nearby')}
         </div>
         {/* Mock Pins */}
         <div className="absolute top-[30%] left-[20%] text-2xl" style={{ animation: 'bounce 2s infinite' }}>📍</div>
@@ -200,7 +214,7 @@ function VendorsScreen() {
           </button>
         ))}
       </div>
-      {loading && <div className="text-center py-8 text-[#404943]">Loading...</div>}
+      {loading && <div className="text-center py-8 text-[#404943]">{t('vendors.loading')}</div>}
       <div className="space-y-3">
         {vendors.map((v, i) => (
           <div key={i} className="card">
@@ -217,28 +231,29 @@ function VendorsScreen() {
               {v.phone && (
                 <a href={`tel:${v.phone}`}
                   className="mt-3 inline-flex items-center gap-2 bg-[#2d6a4f] text-white text-sm px-4 py-2 rounded-full">
-                  📞 Call Now
+                  {t('vendors.call_now')}
                 </a>
               )}
               {v.address && (
                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name + ' ' + v.address)}`}
                   target="_blank" rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center gap-2 bg-white border border-[#2d6a4f] text-[#2d6a4f] text-sm px-4 py-2 rounded-full">
-                  📍 Directions
+                  {t('vendors.directions')}
                 </a>
               )}
             </div>
           </div>
         ))}
         {!loading && selected && vendors.length === 0 && (
-          <p className="text-center text-[#404943] py-8">No vendors found for this category.</p>
+          <p className="text-center text-[#404943] py-8">{t('vendors.no_vendors')}</p>
         )}
       </div>
     </div>
   );
 }
-function HomeScreen({ onNav, lang, setLang, user, userStats }) {
-  const t = T[lang] || T.en;
+function HomeScreen({ onNav, user, userStats }) {
+  const { t, i18n } = useTranslation();
+  
   const displayName = user?.displayName?.split(' ')[0] || 'Friend';
   const hour = new Date().getHours();
   const greetingKey = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -262,16 +277,16 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
         </button>
         <div className="flex bg-white rounded-full border border-[#bfc9c1]/50 overflow-hidden text-xs font-semibold">
           {[['en', 'EN'], ['hi', 'हि'], ['kn', 'ಕ']].map(([k, l]) => (
-            <button key={k} onClick={() => setLang(k)}
-              className={`px-3 py-1.5 transition-colors ${lang === k ? 'bg-[#2d6a4f] text-white' : 'text-[#404943]'}`}>
+            <button key={k} onClick={() => i18n.changeLanguage(k)}
+              className={`px-3 py-1.5 transition-colors ${i18n.language === k ? 'bg-[#2d6a4f] text-white' : 'text-[#404943]'}`}>
               {l}
             </button>
           ))}
         </div>
       </div>
       <div className="card anim d1">
-        <h2 className="font-semibold text-xl text-[#151c22]">{greetingKey}, {displayName}.</h2>
-        <p className="text-[#404943] text-base mt-1">{t.t}</p>
+        <h2 className="font-semibold text-xl text-[#151c22]">{t('home.good_morning', {defaultValue: greetingKey})}, {displayName}.</h2>
+        <p className="text-[#404943] text-base mt-1">{t('home.making_diff')}</p>
       </div>
       {streak > 0 && (
         <div className="anim d2 flex items-center gap-3 bg-[#fff8e1] border border-[#e8a020]/20 rounded-[20px] px-4 py-3">
@@ -281,45 +296,45 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
         </div>
       )}
       <div className="card anim d2 flex flex-col items-center">
-        <h3 className="font-semibold text-xl self-start">{t.d}</h3>
-        <svg width="160" height="160" viewBox="0 0 160 160" className="my-4"><circle cx="80" cy="80" r="64" fill="none" stroke="#dce3ec" strokeWidth="12" /><circle cx="80" cy="80" r="64" fill="none" stroke="#2d6a4f" strokeWidth="12" strokeLinecap="round" strokeDasharray="402.12" strokeDashoffset="100.53" transform="rotate(-90 80 80)" /><text x="80" y="75" textAnchor="middle" className="text-2xl font-bold" fill="#151c22">{points}</text><text x="80" y="95" textAnchor="middle" className="text-sm" fill="#404943">Points</text></svg>
-        <p className="text-[#404943]">{itemsDisposed} items properly sorted.</p>
+        <h3 className="font-semibold text-xl self-start">{t('home.daily_progress')}</h3>
+        <svg width="160" height="160" viewBox="0 0 160 160" className="my-4"><circle cx="80" cy="80" r="64" fill="none" stroke="#dce3ec" strokeWidth="12" /><circle cx="80" cy="80" r="64" fill="none" stroke="#2d6a4f" strokeWidth="12" strokeLinecap="round" strokeDasharray="402.12" strokeDashoffset="100.53" transform="rotate(-90 80 80)" /><text x="80" y="75" textAnchor="middle" className="text-2xl font-bold" fill="#151c22">{points}</text><text x="80" y="95" textAnchor="middle" className="text-sm" fill="#404943">{t('board.points')}</text></svg>
+        <p className="text-[#404943]">{t('home.items_sorted', {count: itemsDisposed})}</p>
         <p className="text-[#2d6a4f] font-semibold text-sm mt-1">
-          You prevented ~{kgDiverted.toFixed(1)} kg waste from landfill
+          {t('home.prevented_kg', {kg: kgDiverted.toFixed(1)})}
         </p>
       </div>
       <div className="grid grid-cols-2 gap-4 anim d3">
         <div className="card-s h-32 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[#404943] text-sm">Total Points</span>
+            <span className="text-[#404943] text-sm">{t('home.total_points')}</span>
             <I n="star" f s={{ color: '#f59e0b', fontSize: '20px' }} />
           </div>
           <div>
             <span className="text-xl font-semibold">{points.toLocaleString()}</span>
-            <br /><span className="text-xs font-semibold text-[#2d6a4f]">Impact score</span>
+            <br /><span className="text-xs font-semibold text-[#2d6a4f]">{t('home.impact_score')}</span>
           </div>
         </div>
         <div className="card-s h-32 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[#404943] text-sm">Recent Scans</span>
+            <span className="text-[#404943] text-sm">{t('home.recent_scans')}</span>
             <I n="center_focus_strong" f s={{ color: '#1f5eac', fontSize: '20px' }} />
           </div>
           <div>
             <span className="text-xl font-semibold">{itemsDisposed}</span>
-            <br /><span className="text-xs font-semibold text-[#2d6a4f]">Total</span>
+            <br /><span className="text-xs font-semibold text-[#2d6a4f]">{t('home.total')}</span>
           </div>
         </div>
       </div>
       <div className="flex gap-2 overflow-x-auto anim d4 pb-1">
-        {treesEquiv > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">🌳 {treesEquiv} trees saved</span>}
-        {bottlesRescued > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">♻️ {bottlesRescued} bottles</span>}
-        {kgDiverted > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">🗑️ {kgDiverted.toFixed(1)} kg diverted</span>}
-        {points === 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">🌱 Start sorting to earn impact!</span>}
+        {treesEquiv > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">{t('home.trees_saved', {count: treesEquiv})}</span>}
+        {bottlesRescued > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">{t('home.bottles_rescued', {count: bottlesRescued})}</span>}
+        {kgDiverted > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">{t('home.kg_diverted', {count: kgDiverted.toFixed(1)})}</span>}
+        {points === 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">{t('home.start_sorting')}</span>}
       </div>
       <div className="anim d5 bg-[#2d6a4f] rounded-[24px] p-6 flex justify-between items-center cursor-pointer" onClick={() => onNav('scanner')}>
         <div>
-          <h3 className="text-white font-semibold text-xl">{t.r}</h3>
-          <p className="text-white/90">{t.s}</p>
+          <h3 className="text-white font-semibold text-xl">{t('home.ready_to_sort')}</h3>
+          <p className="text-white/90">{t('home.scan_next_item')}</p>
         </div>
         <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
           <I n="center_focus_strong" s={{ color: '#2d6a4f' }} />
@@ -528,6 +543,7 @@ function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
 }
 // ResultScreen is now imported from ./components/ResultScreen.jsx
 function LeaderboardScreen({ user, userStats }) {
+  const { t } = useTranslation();
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalRanked, setTotalRanked] = useState(0);
@@ -558,27 +574,27 @@ function LeaderboardScreen({ user, userStats }) {
     <div className="pt-20 px-5 pb-[100px] space-y-4">
       <div className="grid grid-cols-2 gap-4 anim">
         <div className="card-s">
-          <p className="text-xs font-semibold text-[#404943] uppercase tracking-wider">YOUR RANK</p>
+          <p className="text-xs font-semibold text-[#404943] uppercase tracking-wider">{t('board.your_rank')}</p>
           <div className="flex items-baseline gap-1 mt-1">
             <span className="text-4xl font-black text-[#2d6a4f]">
               {myRankInTop10 > 0 ? `#${myRankInTop10}` : 'Top'}
             </span>
-            <span className="text-sm text-[#404943]">in city</span>
+            <span className="text-sm text-[#404943]">{t('board.in_city')}</span>
           </div>
         </div>
         <div className="card-s">
-          <p className="text-xs font-semibold text-[#404943] uppercase tracking-wider">TOTAL IMPACT</p>
+          <p className="text-xs font-semibold text-[#404943] uppercase tracking-wider">{t('board.total_impact')}</p>
           <p className="text-4xl font-black text-[#151c22] mt-1">{myPoints.toLocaleString()}</p>
-          <p className="text-sm text-[#404943]">Points</p>
+          <p className="text-sm text-[#404943]">{t('board.points')}</p>
         </div>
       </div>
 
       <div className="card anim d2">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-xl">Top Savers</h3>
-          <span className="text-sm text-[#2d6a4f] font-medium">All Time</span>
+          <h3 className="font-semibold text-xl">{t('board.top_savers')}</h3>
+          <span className="text-sm text-[#2d6a4f] font-medium">{t('board.all_time')}</span>
         </div>
-        {loading && <p className="text-center text-[#404943] py-4">Loading...</p>}
+        {loading && <p className="text-center text-[#404943] py-4">{t('vendors.loading')}</p>}
         <div className="space-y-4">
           {leaders.map((row, i) => {
             const badge = badgeForPoints(row.total_points || 0);
@@ -593,7 +609,7 @@ function LeaderboardScreen({ user, userStats }) {
                 </div>
                 <div className="flex-1">
                   <p className={`font-semibold ${isMe ? 'text-[#2d6a4f]' : 'text-[#151c22]'}`}>
-                    {isMe ? 'You' : (row.display_name || `User ${row.uid?.substring(0, 6)}`)}
+                    {isMe ? t('board.you') : (row.display_name || `User ${row.uid?.substring(0, 6)}`)}
                   </p>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium"
                     style={{ background: badge.bg, color: badge.color }}>{badge.label}</span>
@@ -602,20 +618,21 @@ function LeaderboardScreen({ user, userStats }) {
                   <span className={`text-xl font-bold ${isMe ? 'text-[#2d6a4f]' : 'text-[#151c22]'}`}>
                     {(row.total_points || 0).toLocaleString()}
                   </span>
-                  <br /><span className="text-xs text-[#404943]">pts</span>
+                  <br /><span className="text-xs text-[#404943]">{t('board.pts')}</span>
                 </div>
               </div>
             );
           })}
         </div>
         {!loading && leaders.length === 0 && (
-          <p className="text-center text-[#404943] py-4">No rankings yet. Be the first! 🌱</p>
+          <p className="text-center text-[#404943] py-4">{t('board.no_rankings')}</p>
         )}
       </div>
     </div>
   );
 }
 function JourneyScreen({ user, userStats, onNav }) {
+  const { t } = useTranslation();
   const points = userStats?.total_points || 0;
   const kgDiverted = userStats?.kg_diverted || 0;
   const treesEquiv = userStats?.trees_equivalent || 0;
@@ -630,22 +647,22 @@ function JourneyScreen({ user, userStats, onNav }) {
 
   return (
     <div className="pt-20 px-5 pb-[100px] space-y-5">
-      <h1 className="text-3xl font-black text-[#151c22] leading-tight anim">Personal Impact Dashboard</h1>
-      <p className="text-[#404943] text-sm mt-2 anim d1">See the real-world difference you're making.</p>
+      <h1 className="text-3xl font-black text-[#151c22] leading-tight anim">{t('journey.title')}</h1>
+      <p className="text-[#404943] text-sm mt-2 anim d1">{t('journey.subtitle')}</p>
 
       <div className="card anim d2" style={{ background: 'linear-gradient(135deg, #2d6a4f 0%, #1e3a2e 100%)' }}>
-        <h2 className="text-white font-bold text-lg mb-2">Your Eco-Footprint</h2>
+        <h2 className="text-white font-bold text-lg mb-2">{t('journey.eco_footprint')}</h2>
         <p className="text-white/90 text-sm italic mb-4">"{quote}"</p>
         <div className="grid grid-cols-2 gap-3 mt-4">
           <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
             <div className="text-2xl mb-1">🌳</div>
             <div className="text-white font-bold text-xl">{treesEquiv}</div>
-            <div className="text-white/80 text-xs">Trees Saved</div>
+            <div className="text-white/80 text-xs">{t('journey.trees_saved')}</div>
           </div>
           <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
             <div className="text-2xl mb-1">♻️</div>
             <div className="text-white font-bold text-xl">{bottlesRescued}</div>
-            <div className="text-white/80 text-xs">Bottles Rescued</div>
+            <div className="text-white/80 text-xs">{t('journey.bottles_rescued')}</div>
           </div>
         </div>
       </div>
@@ -653,21 +670,21 @@ function JourneyScreen({ user, userStats, onNav }) {
       <div className="grid grid-cols-2 gap-4 anim d3">
         <div className="card-s flex flex-col justify-center items-center h-32">
           <span className="text-3xl font-black text-[#2d6a4f]">{kgDiverted.toFixed(1)}</span>
-          <span className="text-sm font-semibold text-[#404943] mt-1">kg Diverted</span>
+          <span className="text-sm font-semibold text-[#404943] mt-1">{t('journey.kg_diverted')}</span>
         </div>
         <div className="card-s flex flex-col justify-center items-center h-32">
           <span className="text-3xl font-black text-[#1f5eac]">{points.toLocaleString()}</span>
-          <span className="text-sm font-semibold text-[#404943] mt-1">Impact Points</span>
+          <span className="text-sm font-semibold text-[#404943] mt-1">{t('journey.impact_points')}</span>
         </div>
       </div>
 
       <div className="card anim d4 bg-[#e8f5e9] border border-[#2d6a4f]/20">
         <div className="flex items-center gap-3 mb-3">
           <I n="psychology" s={{ color: '#2d6a4f', fontSize: '24px' }} />
-          <h3 className="font-semibold text-lg text-[#151c22]">Your Progress</h3>
+          <h3 className="font-semibold text-lg text-[#151c22]">{t('journey.progress')}</h3>
         </div>
         <p className="text-sm text-[#404943]">
-          You have successfully diverted <strong>{kgDiverted.toFixed(1)} kg</strong> of waste from landfills. That's a <strong>{(kgDiverted === 0 ? 0 : 15.5).toFixed(1)}%</strong> improvement this month! Keep up the great work sorting your items correctly.
+          {t('journey.progress_text', {kg: kgDiverted.toFixed(1)})}
         </p>
         <div className="mt-4 h-2 bg-[#dce3ec] rounded-full overflow-hidden">
           <div className="h-full bg-[#2d6a4f] rounded-full" style={{ width: `${Math.min(100, (kgDiverted / 10) * 100)}%` }}></div>
@@ -682,9 +699,10 @@ function JourneyScreen({ user, userStats, onNav }) {
 }
 function showPushNotif(title, options) { if ('serviceWorker' in navigator) { navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, options).catch(e => console.error('SW notif error:', e)); }); } else { try { new Notification(title, options); } catch (e) { console.error('Notif error:', e); } } }
 function App() {
+  const { t } = useTranslation();
   const [scr, setScr] = useState('home');
   const [chat, setChat] = useState(false);
-  const [lang, setLang] = useState('en');
+  
   const [imgUrl, setImgUrl] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [user, setUser] = useState(null);
@@ -790,7 +808,7 @@ function App() {
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#f0f4f8' }}>
         <div className="phone flex flex-col items-center justify-center">
           <div className="text-5xl mb-4" style={{ animation: 'pulse-soft 1.5s infinite' }}>🌱</div>
-          <div className="text-[#2d6a4f] font-bold">Loading WasteWise...</div>
+          <div className="text-[#2d6a4f] font-bold">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -812,7 +830,7 @@ function App() {
         <input type="file" accept="image/*" ref={fileRef} onChange={handleFile} style={{display:'none'}}/>
         {scr!=='scanner'&&<TopBar screen={scr} onBack={()=>nav(topBack)} onNav={nav}/>}
         <div className="absolute inset-0 overflow-y-auto" style={{top:scr==='scanner'?0:0,bottom:0}}>
-          {scr==='home'&&<HomeScreen onNav={nav} lang={lang} setLang={setLang} user={user} userStats={userStats}/>}
+          {scr==='home'&&<HomeScreen onNav={nav} user={user} userStats={userStats}/>}
           {scr==='scanner'&&<ScannerScreen onNav={nav} onChat={()=>setChat(true)} fileRef={fileRef} onCapture={(url)=>{setImgUrl(url);setScr('upload-preview');}}/>}
           {scr==='upload-preview'&&<UploadPreviewScreen onNav={nav} imgUrl={imgUrl} fileRef={fileRef} user={user} onResult={setAnalysisResult}/>}
           {scr==='result'&&<NewResultScreen onNav={nav} result={analysisResult} user={user}/>}

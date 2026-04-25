@@ -41,13 +41,16 @@ async def analyze(payload: AnalyzeRequest) -> AnalysisResult:
             detail=f"YOLO Vision error: {exc}",
         ) from exc
 
-    # Award 10 points per item detected, save analysis
-    points = len(result.items) * 10
-    _add_points(payload.uid, points, "waste_scan")
-    
-    # Save to Firestore
-    analysis_dict = result.model_dump()
-    save_analysis(payload.uid, analysis_dict)
+    # Award 10 points per item detected, save analysis (Wrap in try/except to prevent blocking on Firebase issues)
+    try:
+        points = len(result.items) * 10
+        _add_points(payload.uid, points, "waste_scan")
+        
+        # Save to Firestore
+        analysis_dict = result.model_dump()
+        save_analysis(payload.uid, analysis_dict)
+    except Exception as e:
+        print(f"[VISION] Firebase operations failed (points/save): {e}")
 
     print("[VISION] response sent")
     return result

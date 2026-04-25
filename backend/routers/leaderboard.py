@@ -109,7 +109,7 @@ def complete_checkpoint(uid: str, body: CheckpointRequest):
 @router.get("/user/{uid}/profile")
 def get_profile(uid: str):
     """Return user profile."""
-    if uid == "demo-user":
+    if uid.startswith("demo-"):
         return {
             "uid": uid,
             "displayName": "Demo User",
@@ -150,7 +150,7 @@ def get_profile(uid: str):
 @router.post("/user/{uid}/profile")
 def update_profile(uid: str, body: ProfileUpdate):
     """Called after login to store display name."""
-    if uid == "demo-user":
+    if uid.startswith("demo-"):
         return {"success": True}
         
     from services.firestore_service import _get_db
