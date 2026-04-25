@@ -27,13 +27,25 @@ load_dotenv()
 
 __all__ = ["YoloService", "analyze_waste_image"]
 
+# Paths that work both locally (with /backend prefix) and on Hugging Face (without it)
+def _resolve_path(path_str: str) -> Path:
+    p = Path(path_str)
+    if p.exists():
+        return p
+    # Try without the 'backend/' prefix if it was included
+    if path_str.startswith("backend/"):
+        alt_p = Path(path_str.replace("backend/", "", 1))
+        if alt_p.exists():
+            return alt_p
+    return p
+
 _DEFAULT_MODEL_PATHS = [
-    Path("backend/models/yolo/waste_best.pt"),
-    Path("backend/models/yolo/laptop_best.pt"),
-    Path("backend/models/yolo/organic_best.pt"),
-    Path("backend/models/yolo/best.pt"),
+    Path("models/yolo/waste_best.pt"),
+    Path("models/yolo/laptop_best.pt"),
+    Path("models/yolo/organic_best.pt"),
+    Path("models/yolo/best.pt"),
 ]
-_DEFAULT_RULES_PATH = Path("backend/config/waste_rules.json")
+_DEFAULT_RULES_PATH = Path("config/waste_rules.json")
 _DEFAULT_GLOBAL_CONFIDENCE_THRESHOLD = 0.25
 _MODEL_DEFAULT_CONFIDENCE_THRESHOLDS = {
     "laptop_best.pt": 0.30,
@@ -118,8 +130,15 @@ class YoloService:
         seen: set[str] = set()
         for raw_path in raw_paths:
             path = Path(raw_path).expanduser()
+            
+            # Try absolute or relative to root
             if not path.is_absolute():
-                path = (self._project_root / path).resolve()
+                full_path = (self._project_root / path).resolve()
+                if not full_path.exists():
+                    # Try with 'backend/' prefix removed
+                    if raw_path.startswith("backend/"):
+                        full_path = (self._project_root / raw_path.replace("backend/", "", 1)).resolve()
+                path = full_path
 
             key = str(path)
             if key in seen:
@@ -129,10 +148,17 @@ class YoloService:
         return resolved
 
     def _resolve_rules_path(self) -> Path:
+        # Check standard path
         path = (self._project_root / _DEFAULT_RULES_PATH).resolve()
-        if not path.exists() or not path.is_file():
-            raise RuntimeError(f"Waste rules file not found: {path}")
-        return path
+        if path.exists():
+            return path
+            
+        # Check fallback path (adding 'backend/' back if it was stripped)
+        alt_path = (self._project_root / "backend" / _DEFAULT_RULES_PATH).resolve()
+        if alt_path.exists():
+            return alt_path
+            
+        raise RuntimeError(f"Waste rules file not found. Checked: {path} and {alt_path}")
 
     @staticmethod
     def _parse_threshold(raw_value: str, env_var_name: str) -> float:
