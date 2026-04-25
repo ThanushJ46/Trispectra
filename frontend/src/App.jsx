@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fbAuth, GoogleAuthProvider, signInWithPopup, firebaseEnabled } from './firebase.js';
 import { apiRequest } from './utils/api.js';
+import NewResultScreen from './components/ResultScreen.jsx';
 
 
 
@@ -119,6 +120,30 @@ function VendorsScreen() {
   return (
     <div className="pt-20 px-5 pb-[100px]">
       <h1 className="text-2xl font-bold text-[#151c22] mb-4">Collection Points</h1>
+      
+      {/* Mock Map Section */}
+      <div className="relative w-full h-48 rounded-[24px] overflow-hidden mb-5 border border-[#bfc9c1]/40 bg-[#e8eef7]">
+        {/* Simple CSS pattern to look like a map grid */}
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: 'linear-gradient(#2d6a4f 1px, transparent 1px), linear-gradient(90deg, #2d6a4f 1px, transparent 1px)',
+          backgroundSize: '20px 20px'
+        }}></div>
+        {/* Map UI Elements */}
+        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#2d6a4f] shadow-sm">
+          📍 3 Vendors Nearby
+        </div>
+        {/* Mock Pins */}
+        <div className="absolute top-[30%] left-[20%] text-2xl" style={{animation: 'bounce 2s infinite'}}>📍</div>
+        <div className="absolute top-[50%] left-[60%] text-2xl" style={{animation: 'bounce 2.2s infinite'}}>📍</div>
+        <div className="absolute top-[70%] left-[30%] text-2xl" style={{animation: 'bounce 1.8s infinite'}}>📍</div>
+        
+        {/* User Location */}
+        <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
+          <div className="w-4 h-4 bg-[#1f5eac] rounded-full border-2 border-white shadow-md relative">
+            <div className="absolute inset-0 bg-[#1f5eac] rounded-full animate-ping opacity-50"></div>
+          </div>
+        </div>
+      </div>
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4">
         {categories.map(c => (
           <button key={c.name} onClick={() => loadVendors(c.name)}
@@ -287,14 +312,20 @@ function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
           image_base64: base64,
           uid: user.uid
         })
-      });
+      }, 120000);
+
+      if (!response.items || response.total_items_detected === 0) {
+        setError('No trained waste items detected. Try a clearer image with trained classes like PET bottle, plastic bag, can, glass, laptop, book, apple, carrot, rice, etc.');
+        return;
+      }
 
       onResult(response);
       onNav('result');
     } catch (e) {
       setError(`Analysis failed: ${e.message}. Please try again.`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -338,140 +369,7 @@ function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
     </div>
   );
 }
-function ResultScreen({ onNav, onChat, result, user }) {
-  const [feedbackSent, setFeedbackSent] = useState(false);
-  
-  if (!result || !result.items || result.items.length === 0) {
-    return (
-      <div className="pt-20 px-5 text-center">
-        <p className="text-[#404943]">No waste items detected. Try a clearer photo.</p>
-        <button onClick={() => onNav('scanner')} className="mt-4 bg-[#2d6a4f] text-white px-6 py-3 rounded-full">
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
-  const primaryItem = result.items[0];
-  
-  const categoryColors = {
-    wet_organic: { bg: '#b1f0ce', text: '#0f5238', label: 'Organic' },
-    dry_recyclable: { bg: '#e3f2fd', text: '#1f5eac', label: 'Recyclable' },
-    e_waste: { bg: '#fce4ec', text: '#880e4f', label: 'E-Waste' },
-    hazardous: { bg: '#fff3e0', text: '#e65100', label: 'Hazardous' },
-    medical: { bg: '#f3e5f5', text: '#6a1b9a', label: 'Medical' },
-    construction: { bg: '#efebe9', text: '#3e2723', label: 'Construction' },
-    sanitary: { bg: '#e8eaf6', text: '#283593', label: 'Sanitary' },
-  };
-
-  const disposalIcons = {
-    compost: 'compost',
-    sell: 'sell',
-    donate: 'volunteer_activism',
-    collection_point: 'location_on',
-    special_facility: 'settings'
-  };
-
-  const colors = categoryColors[primaryItem.waste_category] || { bg: '#e8eef7', text: '#404943', label: primaryItem.waste_category };
-  const icon = disposalIcons[primaryItem.disposal_path] || 'eco';
-  
-  const confidenceLabel = { high: '90%+', medium: '70–90%', low: '<70%' };
-
-  const submitFeedback = async (correct) => {
-    if (!user || feedbackSent) return;
-    setFeedbackSent(true);
-    try {
-      await apiRequest('/api/vision/feedback', {
-        method: 'POST',
-        body: JSON.stringify({
-          uid: user.uid,
-          analysis_id: result.session_id || 'unknown',
-          correct
-        })
-      });
-    } catch(e) { console.error('Feedback failed:', e); }
-  };
-
-  return (
-    <div className="pt-20 px-5 space-y-4 pb-44">
-      <div className="anim d1">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-[#151c22] capitalize">{primaryItem.item_name}</h2>
-          <span className="flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full"
-            style={{background: colors.bg, color: colors.text}}>
-            <I n="compost" s={{fontSize:'14px'}}/>{colors.label}
-          </span>
-        </div>
-        <div className="flex items-center gap-1 mt-1">
-          <I n="verified" s={{color:'#2c694e',fontSize:'16px'}}/>
-          <span className="text-sm text-[#404943]">{confidenceLabel[primaryItem.confidence] || '?'} Confidence</span>
-          {primaryItem.is_hazardous && (
-            <span className="ml-2 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">⚠️ Hazardous</span>
-          )}
-        </div>
-      </div>
-
-      <div className="card anim d2">
-        <h3 className="font-semibold text-xl mb-3">Recommended Action</h3>
-        <div className="flex items-start gap-3">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{background: colors.bg}}>
-            <I n={icon} s={{color: colors.text}}/>
-          </div>
-          <div>
-            <p className="text-lg text-[#151c22] capitalize">
-              {primaryItem.disposal_path.replace(/_/g, ' ')}
-            </p>
-            <p className="text-sm text-[#404943] mt-1">{primaryItem.reason}</p>
-          </div>
-        </div>
-        {primaryItem.waste_category === 'wet_organic' && (
-          <button onClick={()=>onNav('journey')} 
-            className="bg-[#2d6a4f] text-white w-full h-14 rounded-[24px] font-semibold mt-4 text-base">
-            Start 21-Day Journey →
-          </button>
-        )}
-      </div>
-
-      {result.items.length > 1 && (
-        <div className="card anim d3">
-          <h3 className="font-semibold text-xl mb-3">Also Detected ({result.items.length - 1} more)</h3>
-          {result.items.slice(1).map((item, i) => {
-            const c = categoryColors[item.waste_category] || { bg: '#e8eef7', text: '#404943', label: item.waste_category };
-            return (
-              <div key={i} className="flex items-center gap-3 mb-3">
-                <span className="text-sm font-semibold text-[#151c22] flex-1 capitalize">{item.item_name}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full"
-                  style={{background: c.bg, color: c.text}}>{c.label}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="anim d3 bg-[#e8f5e9] rounded-[24px] p-4 flex items-center gap-3">
-        <span className="text-2xl">⭐</span>
-        <div>
-          <p className="font-bold text-[#0f5238]">+{result.items.length * 10} points earned!</p>
-          <p className="text-xs text-[#404943]">Added to your impact score</p>
-        </div>
-      </div>
-
-      <div className="text-center anim d4">
-        <p className="text-sm text-[#404943] mb-3">Was this result correct?</p>
-        {feedbackSent 
-          ? <p className="text-[#2d6a4f] font-semibold text-sm">Thanks for your feedback! 🙏</p>
-          : <div className="flex gap-3 max-w-xs mx-auto">
-              <button onClick={()=>submitFeedback(true)} 
-                className="flex-1 h-14 rounded-[24px] font-semibold bg-[#0f5238] text-white">Yes</button>
-              <button onClick={()=>submitFeedback(false)}
-                className="flex-1 h-14 rounded-[24px] font-semibold bg-[#dce3ec] text-[#151c22]">No</button>
-            </div>
-        }
-      </div>
-    </div>
-  );
-}
+// ResultScreen is now imported from ./components/ResultScreen.jsx
 function LeaderboardScreen({ user, userStats }) {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -560,180 +458,68 @@ function LeaderboardScreen({ user, userStats }) {
     </div>
   );
 }
-function JourneyScreen({ user, onNav }) {
-  const [journey, setJourney] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [celeb, setCeleb] = useState(false);
-  const [markingDay, setMarkingDay] = useState(null);
-  const [showStartJourney, setShowStartJourney] = useState(false);
-  const [phone, setPhone] = useState('');
-  const [startingJourney, setStartingJourney] = useState(false);
-
-  const CHECKPOINT_DAYS = [1, 3, 7, 21];
-
-  const STEP_DEFS = {
-    1: { title: 'Start Your Bin', desc: 'Choose a well-ventilated spot and add a base layer of coarse brown materials like twigs or straw to ensure good airflow.' },
-    3: { title: 'Add Greens', desc: 'Incorporate nitrogen-rich materials like vegetable peelings, coffee grounds, and fresh grass clippings to start the heating process.' },
-    7: { title: 'The First Turn', desc: "It's time to aerate! Use a pitchfork or compost aerator to thoroughly mix the pile. This introduces oxygen crucial for the microbes." },
-    21: { title: 'Harvest Your Compost', desc: 'Identify when your compost is ready and learn the best ways to apply it to your garden.' },
-  };
-
-  const loadJourney = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const d = await apiRequest(`/api/reminder/${user.uid}`);
-      setJourney(d.journey);
-    } catch(e) { 
-      console.error(e); 
-      setJourney(null);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => { loadJourney(); }, [user]);
-
-  const markComplete = async (day) => {
-    if (!user || markingDay) return;
-    setMarkingDay(day);
-    try {
-      const d = await apiRequest(`/api/user/${user.uid}/checkpoint`, {
-        method: 'POST',
-        body: JSON.stringify({ day, status: 'completed' })
-      });
-      if (d.success) {
-        setCeleb(true);
-        setTimeout(() => setCeleb(false), 2000);
-        loadJourney(); 
-      }
-    } catch(e) { console.error(e); }
-    setMarkingDay(null);
-  };
-
-  const startJourney = async () => {
-    if (!user) return;
-    setStartingJourney(true);
-    try {
-      const d = await apiRequest('/api/reminder/schedule', {
-        method: 'POST',
-        body: JSON.stringify({
-          uid: user.uid,
-          journey_start_date: new Date().toISOString(),
-          waste_type: 'organic',
-          items: [],
-          primary_item: 'kitchen waste'
-        })
-      });
-      setShowStartJourney(false); 
-      loadJourney();
-    } catch(e) { 
-      alert(`Failed to start journey: ${e.message}`); 
-    }
-    setStartingJourney(false);
-  };
-
-  if (loading) return <div className="pt-20 px-5 text-center text-[#404943] py-8">Loading journey...</div>;
-
-  if (!journey) {
-    return (
-      <div className="pt-20 px-5 pb-[100px]">
-        <h1 className="text-3xl font-black text-[#151c22] leading-tight">21-Day Composting Journey</h1>
-        <p className="text-[#404943] text-sm mt-2">Transform kitchen scraps into nutrient-rich soil.</p>
-        {showStartJourney ? (
-          <div className="card mt-6">
-            <h3 className="font-semibold text-lg mb-3">Start Your Journey</h3>
-            <p className="text-sm text-[#404943] mb-3">You will receive notifications here on the app for each checkpoint.</p>
-            <button onClick={startJourney} disabled={startingJourney}
-              className="bg-[#2d6a4f] text-white w-full h-12 rounded-[20px] font-semibold disabled:opacity-50">
-              {startingJourney ? 'Starting...' : 'Begin Journey 🌱'}
-            </button>
-          </div>
-        ) : (
-          <button onClick={() => setShowStartJourney(true)}
-            className="mt-6 bg-[#2d6a4f] text-white w-full h-14 rounded-[24px] font-semibold">
-            Start My 21-Day Journey →
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  const checkpoints = journey.checkpoints || {};
-  const completedDays = Object.entries(checkpoints)
-    .filter(([_, v]) => v.status === 'completed').map(([k]) => parseInt(k));
-  const progress = Math.round((completedDays.length / CHECKPOINT_DAYS.length) * 100);
-  const nextDay = CHECKPOINT_DAYS.find(d => !completedDays.includes(d)) || null;
-  const startDate = journey.start_date?.seconds 
-    ? new Date(journey.start_date.seconds * 1000) 
-    : new Date(journey.start_date || Date.now());
-  const daysSinceStart = Math.floor((Date.now() - startDate.getTime()) / (1000*60*60*24));
+function JourneyScreen({ user, userStats, onNav }) {
+  const points = userStats?.total_points || 0;
+  const kgDiverted = userStats?.kg_diverted || 0;
+  const treesEquiv = userStats?.trees_equivalent || 0;
+  const bottlesRescued = userStats?.bottles_rescued || 0;
+  
+  const quotes = [
+    "Recycling one ton of paper saves 17 trees and 7,000 gallons of water. Be the change—one bin at a time!",
+    "Turn waste into wonder: Recycling isn't just good for the planet; it's your superpower for a greener tomorrow.",
+    "Every recycled bottle is a step toward a cleaner world. You've got the power—reuse, reduce, recycle!"
+  ];
+  const quote = quotes[Math.floor(Math.random() * quotes.length)];
 
   return (
-    <div className="pt-20 px-5 pb-44">
-      <h1 className="text-3xl font-black text-[#151c22] leading-tight anim">21-Day Composting Journey</h1>
-      <p className="text-[#404943] text-sm mt-2 anim d1">Day {daysSinceStart + 1} of 21</p>
-      <div className="flex items-center justify-between mt-3 anim d1">
-        <span className="font-semibold text-[#151c22]">{completedDays.length} of {CHECKPOINT_DAYS.length} checkpoints complete</span>
-        <span className="text-sm text-[#404943]">{progress}%</span>
-      </div>
-      <div className="h-2 bg-[#dce3ec] rounded-full mt-2 anim d1">
-        <div className="bg-[#2d6a4f] rounded-full h-2 transition-all duration-700" style={{width:`${progress}%`}}/>
-      </div>
-      <div className="space-y-3 mt-6">
-        {CHECKPOINT_DAYS.map((day, i) => {
-          const done = completedDays.includes(day);
-          const isActive = day === nextDay;
-          const stepDef = STEP_DEFS[day] || { title: `Day ${day}`, desc: '' };
-
-          if (done) return (
-            <div key={day} className="anim px-1" style={{animationDelay:`${(i+2)*50}ms`}}>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="bg-[#e8f5e9] text-[#0f5238] text-xs px-2 py-0.5 rounded-full">✅ Completed</span>
-                <span className="text-xs text-[#404943]">Day {day}</span>
-              </div>
-              <p className="font-semibold text-[#404943]">{stepDef.title}</p>
-              <p className="text-sm text-[#404943]/70">{stepDef.desc}</p>
-            </div>
-          );
-
-          if (isActive) return (
-            <div key={day} className="bg-white rounded-[24px] p-5 border-2 border-[#2d6a4f] anim relative"
-              style={{boxShadow:'0 4px 16px rgba(45,106,79,.15)',animationDelay:`${(i+2)*50}ms`}}>
-              {celeb && <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                {['♻️','🌱','✨'].map((e,j)=><span key={j} className="text-3xl absolute" style={{animation:'celebration 1s ease both',animationDelay:`${j*150}ms`}}>{e}</span>)}
-              </div>}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="bg-[#2d6a4f] text-white text-xs px-3 py-1 rounded-full font-semibold">⭐ Today's Task</span>
-                <span className="text-xs text-[#404943]">Day {day}</span>
-              </div>
-              <h3 className="font-bold text-xl text-[#151c22] mt-2">{stepDef.title}</h3>
-              <p className="text-[#404943] text-sm mt-1">{stepDef.desc}</p>
-              <button onClick={() => markComplete(day)} disabled={markingDay === day}
-                className="bg-[#2d6a4f] text-white w-full h-12 rounded-[20px] font-semibold mt-4 disabled:opacity-50">
-                {markingDay === day ? 'Marking...' : 'Mark as Complete ✓'}
-              </button>
-            </div>
-          );
-
-          return (
-            <div key={day} className="anim px-1 opacity-40" style={{animationDelay:`${(i+2)*50}ms`}}>
-              <div className="flex items-center gap-2 mb-1">
-                <I n="lock" s={{fontSize:'14px',color:'#404943'}}/>
-                <span className="text-xs text-[#404943]">Day {day}</span>
-              </div>
-              <p className="font-semibold text-[#404943]">{stepDef.title}</p>
-              <p className="text-sm text-[#404943]/80">{stepDef.desc}</p>
-            </div>
-          );
-        })}
-      </div>
-      {progress === 100 && (
-        <div className="mt-6 bg-[#2d6a4f] rounded-[24px] p-6 text-center">
-          <div className="text-4xl mb-2">🎉</div>
-          <h3 className="text-white font-bold text-xl">Journey Complete!</h3>
-          <p className="text-white/80 text-sm mt-2">You've mastered composting. Share your impact!</p>
+    <div className="pt-20 px-5 pb-[100px] space-y-5">
+      <h1 className="text-3xl font-black text-[#151c22] leading-tight anim">Personal Impact Dashboard</h1>
+      <p className="text-[#404943] text-sm mt-2 anim d1">See the real-world difference you're making.</p>
+      
+      <div className="card anim d2" style={{background: 'linear-gradient(135deg, #2d6a4f 0%, #1e3a2e 100%)'}}>
+        <h2 className="text-white font-bold text-lg mb-2">Your Eco-Footprint</h2>
+        <p className="text-white/90 text-sm italic mb-4">"{quote}"</p>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+            <div className="text-2xl mb-1">🌳</div>
+            <div className="text-white font-bold text-xl">{treesEquiv}</div>
+            <div className="text-white/80 text-xs">Trees Saved</div>
+          </div>
+          <div className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+            <div className="text-2xl mb-1">♻️</div>
+            <div className="text-white font-bold text-xl">{bottlesRescued}</div>
+            <div className="text-white/80 text-xs">Bottles Rescued</div>
+          </div>
         </div>
-      )}
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4 anim d3">
+        <div className="card-s flex flex-col justify-center items-center h-32">
+          <span className="text-3xl font-black text-[#2d6a4f]">{kgDiverted.toFixed(1)}</span>
+          <span className="text-sm font-semibold text-[#404943] mt-1">kg Diverted</span>
+        </div>
+        <div className="card-s flex flex-col justify-center items-center h-32">
+          <span className="text-3xl font-black text-[#1f5eac]">{points.toLocaleString()}</span>
+          <span className="text-sm font-semibold text-[#404943] mt-1">Impact Points</span>
+        </div>
+      </div>
+
+      <div className="card anim d4 bg-[#e8f5e9] border border-[#2d6a4f]/20">
+        <div className="flex items-center gap-3 mb-3">
+          <I n="psychology" s={{color:'#2d6a4f',fontSize:'24px'}}/>
+          <h3 className="font-semibold text-lg text-[#151c22]">Your Progress</h3>
+        </div>
+        <p className="text-sm text-[#404943]">
+          You have successfully diverted <strong>{kgDiverted.toFixed(1)} kg</strong> of waste from landfills. That's a <strong>{(kgDiverted === 0 ? 0 : 15.5).toFixed(1)}%</strong> improvement this month! Keep up the great work sorting your items correctly.
+        </p>
+        <div className="mt-4 h-2 bg-[#dce3ec] rounded-full overflow-hidden">
+          <div className="h-full bg-[#2d6a4f] rounded-full" style={{width: `${Math.min(100, (kgDiverted / 10) * 100)}%`}}></div>
+        </div>
+        <div className="flex justify-between text-xs text-[#404943] mt-2 font-medium">
+          <span>0 kg</span>
+          <span>Goal: 10 kg</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -810,7 +596,35 @@ function App() {
   const handleAllowNotif=()=>{Notification.requestPermission().then(permission=>{setShowNotifModal(false);if(permission==='granted'){localStorage.setItem('notif-granted','true');showPushNotif('Welcome to WasteWise! 🌍',{body:'You\'re set up to make a real difference. Let\'s sort some waste today! ♻️'});}});};
   const handleDismissNotif=()=>{localStorage.setItem('notif-dismissed','true');setShowNotifModal(false);};
   const nav=(id, data)=>{if(id==='chat'){setChat(true);return;}if(id==='map'||id==='profile')return;if(data)setAnalysisResult(data);setScr(id);};
-  const handleFile=(e)=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{setImgUrl(ev.target.result);setScr('upload-preview');};r.readAsDataURL(f);e.target.value='';};
+  const handleFile = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = (ev) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        const MAX_SIZE = 1024;
+        if (width > height && width > MAX_SIZE) {
+          height *= MAX_SIZE / width;
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width *= MAX_SIZE / height;
+          height = MAX_SIZE;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        setImgUrl(canvas.toDataURL('image/jpeg', 0.85));
+        setScr('upload-preview');
+      };
+      img.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
+    e.target.value = '';
+  };
   const showNav=scr!=='scanner'&&scr!=='upload-preview';
   const topBack=scr==='upload-preview'?'scanner':'scanner';
 
@@ -844,9 +658,9 @@ function App() {
           {scr==='home'&&<HomeScreen onNav={nav} lang={lang} setLang={setLang} user={user} userStats={userStats}/>}
           {scr==='scanner'&&<ScannerScreen onNav={nav} onChat={()=>setChat(true)} fileRef={fileRef}/>}
           {scr==='upload-preview'&&<UploadPreviewScreen onNav={nav} imgUrl={imgUrl} fileRef={fileRef} user={user} onResult={setAnalysisResult}/>}
-          {scr==='result'&&<ResultScreen onNav={nav} onChat={()=>setChat(true)} result={analysisResult} user={user}/>}
+          {scr==='result'&&<NewResultScreen onNav={nav} result={analysisResult} user={user}/>}
           {scr==='leaderboard'&&<LeaderboardScreen user={user} userStats={userStats}/>}
-          {scr==='journey'&&<JourneyScreen user={user} onNav={nav}/>}
+          {scr==='journey'&&<JourneyScreen user={user} userStats={userStats} onNav={nav}/>}
           {scr==='vendors'&&<VendorsScreen />}
         </div>
         {showNav&&<BottomNav active={scr==='result'?'scanner':scr} onNav={nav}/>}

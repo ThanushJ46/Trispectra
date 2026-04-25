@@ -57,6 +57,9 @@ _RULE_REQUIRED_FIELDS = {
     "is_hazardous",
 }
 
+_loaded_models = None
+_global_model_lock = threading.Lock()
+
 
 class YoloService:
     _instance: YoloService | None = None
@@ -84,8 +87,6 @@ class YoloService:
         self.image_size = self._resolve_image_size()
         self.rules = self._load_rules()
 
-        self._models: list[tuple[Path, Any]] | None = None
-        self._model_lock = threading.Lock()
         self._initialized = True
 
     @staticmethod
@@ -268,9 +269,10 @@ class YoloService:
         return normalized_rules
 
     def _get_models(self) -> list[tuple[Path, Any]]:
-        if self._models is None:
-            with self._model_lock:
-                if self._models is None:
+        global _loaded_models
+        if _loaded_models is None:
+            with _global_model_lock:
+                if _loaded_models is None:
                     try:
                         from ultralytics import YOLO
                     except ImportError as exc:
@@ -319,8 +321,8 @@ class YoloService:
                             "No YOLO models could be loaded. Check model file validity."
                         )
 
-                    self._models = loaded_models
-        return self._models
+                    _loaded_models = loaded_models
+        return _loaded_models
 
     @staticmethod
     def _normalize_base64_payload(image_base64: str) -> str:

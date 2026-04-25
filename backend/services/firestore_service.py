@@ -17,20 +17,31 @@ from firebase_admin import credentials, firestore
 
 # ── Init ──────────────────────────────────────────────────────────────────────
 _initialized = False
+_db_available = False
 
 def _get_db():
-    global _initialized
+    global _initialized, _db_available
     if not _initialized:
+        _initialized = True
         cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH", "serviceAccountKey.json")
         try:
             if not firebase_admin._apps:
-                cred = credentials.Certificate(cred_path)
-                firebase_admin.initialize_app(cred)
-            _initialized = True
+                if os.path.exists(cred_path):
+                    cred = credentials.Certificate(cred_path)
+                    firebase_admin.initialize_app(cred)
+                    _db_available = True
+                else:
+                    print(f"WARNING: {cred_path} not found. Running in demo mode (no Firestore).")
+                    _db_available = False
+            else:
+                _db_available = True
         except Exception as e:
             print(f"WARNING: Firebase init failed: {e}. Running in demo mode.")
-            _initialized = True  # Don't retry on every call
-            return None
+            _db_available = False
+
+    if not _db_available:
+        return None
+
     try:
         return firestore.client()
     except Exception:
@@ -40,6 +51,7 @@ def _get_db():
 
 def get_latest_analysis(uid: str) -> Optional[dict]:
     """Fetch the most recent waste analysis for a user."""
+    if uid == "demo-user": return None
     db = _get_db()
     if db is None: return None
     docs = (
@@ -59,6 +71,7 @@ def save_analysis(uid: str, analysis_data: dict) -> str:
     Save a waste analysis result to Firestore.
     Returns the document ID.
     """
+    if uid == "demo-user": return "mock_id"
     db = _get_db()
     if db is None: return "mock_id"
     ref = db.collection("analyses").document(uid).collection("items").document()
@@ -120,7 +133,7 @@ def create_journey(uid: str, phone: str, start_date: datetime, waste_type: str, 
 
 def _add_points(uid: str, points: int, reason: str):
     """Internal helper — add points to leaderboard doc."""
-    if points <= 0:
+    if points <= 0 or uid == "demo-user":
         return
     db = _get_db()
     if db is None: return
@@ -169,6 +182,16 @@ def get_leaderboard_top10() -> list:
 
 def get_user_stats(uid: str) -> Optional[dict]:
     """Return personal impact stats for a user."""
+    if uid == "demo-user":
+        return {
+            "uid": uid,
+            "total_points": 1200,
+            "kg_diverted": 5.4,
+            "items_disposed": 24,
+            "streak_days": 3,
+            "trees_equivalent": 0.27,
+            "bottles_rescued": 216
+        }
     db = _get_db()
     if db is None: return None
     doc = db.collection("leaderboard").document(uid).get()
