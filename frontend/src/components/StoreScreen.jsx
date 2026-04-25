@@ -16,11 +16,46 @@ export default function StoreScreen({ userStats }) {
   const [toast, setToast] = useState('');
 
   const products = [
-    { id: 'p1', name: 'Bamboo Toothbrush', desc: '100% biodegradable handle', pts: 150, icon: 'brush', color: '#2d6a4f' },
-    { id: 'p2', name: 'Eco Phone Cover', desc: 'Made from ocean plastic', pts: 800, icon: 'smartphone', color: '#1f5eac' },
-    { id: 'p3', name: 'Recycled Shoes', desc: 'Stylish & sustainable footprint', pts: 2500, icon: 'steps', color: '#e8a020' },
-    { id: 'p4', name: 'Zero-Waste Book', desc: 'Guide to sustainable living', pts: 600, icon: 'menu_book', color: '#7e22ce' },
-    { id: 'p5', name: 'Bamboo Specs', desc: 'UV400 polarized wooden frame', pts: 1200, icon: 'visibility', color: '#0f5238' },
+    {
+      id: 'p1',
+      name: 'Bamboo Toothbrush',
+      desc: '100% biodegradable handle',
+      pts: 150,
+      color: '#2d6a4f',
+      img: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400&q=80',
+    },
+    {
+      id: 'p2',
+      name: 'Eco Phone Cover',
+      desc: 'Made from ocean plastic',
+      pts: 800,
+      color: '#1f5eac',
+      img: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80',
+    },
+    {
+      id: 'p3',
+      name: 'Recycled Shoes',
+      desc: 'Stylish & sustainable footprint',
+      pts: 2500,
+      color: '#e8a020',
+      img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',
+    },
+    {
+      id: 'p4',
+      name: 'Zero-Waste Book',
+      desc: 'Guide to sustainable living',
+      pts: 600,
+      color: '#7e22ce',
+      img: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80',
+    },
+    {
+      id: 'p5',
+      name: 'Bamboo Specs',
+      desc: 'UV400 polarized wooden frame',
+      pts: 1200,
+      color: '#0f5238',
+      img: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&q=80',
+    },
   ];
 
   const coupons = [
@@ -80,24 +115,56 @@ export default function StoreScreen({ userStats }) {
 
       {/* Products Tab */}
       {tab === 'products' && (
-        <div className="space-y-4 anim d2">
+        <div className="grid grid-cols-2 gap-3 anim d2">
           {products.map((p, i) => (
-            <div key={p.id} className="card-s flex items-center gap-4" style={{ animationDelay: `${100 + i * 50}ms` }}>
-              <div className="w-14 h-14 rounded-[16px] flex items-center justify-center shadow-sm" style={{ backgroundColor: `${p.color}15` }}>
-                <I n={p.icon} s={{ fontSize: '28px', color: p.color }} />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-[#151c22] leading-tight">{p.name}</h3>
-                <p className="text-xs text-[#404943] mt-0.5">{p.desc}</p>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="font-bold text-[#e8a020] text-sm">{p.pts} pts</span>
-                  <button 
-                    onClick={() => handleBuy(p)}
-                    className="bg-[#e8f5e9] text-[#2d6a4f] px-3 py-1.5 rounded-full text-xs font-bold border border-[#2d6a4f]/20 hover:bg-[#2d6a4f] hover:text-white transition-colors"
-                  >
-                    Redeem
-                  </button>
+            <div
+              key={p.id}
+              className="bg-white rounded-[20px] overflow-hidden border border-[#bfc9c1]/30 shadow-sm flex flex-col"
+              style={{ animationDelay: `${100 + i * 60}ms` }}
+            >
+              {/* Product Image */}
+              <div className="relative w-full" style={{ aspectRatio: '1/1' }}>
+                <img
+                  src={p.img}
+                  alt={p.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                {/* Fallback */}
+                <div
+                  className="w-full h-full items-center justify-center hidden"
+                  style={{ background: `${p.color}18` }}
+                >
+                  <span style={{ fontSize: 40 }}>🌿</span>
                 </div>
+                {/* Points badge */}
+                <div
+                  className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-white text-[10px] font-bold shadow"
+                  style={{ background: p.color }}
+                >
+                  {p.pts} pts
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="p-3 flex flex-col flex-1 justify-between">
+                <div>
+                  <h3 className="font-bold text-[#151c22] text-sm leading-tight">{p.name}</h3>
+                  <p className="text-[10px] text-[#404943] mt-0.5 leading-snug">{p.desc}</p>
+                </div>
+                <button
+                  onClick={() => handleBuy(p)}
+                  className="mt-3 w-full py-2 rounded-[12px] text-xs font-bold transition-all active:scale-95"
+                  style={{
+                    background: localPoints >= p.pts ? p.color : '#e5e7eb',
+                    color: localPoints >= p.pts ? '#fff' : '#9ca3af',
+                  }}
+                >
+                  {localPoints >= p.pts ? 'Redeem ✓' : 'Need more pts'}
+                </button>
               </div>
             </div>
           ))}
