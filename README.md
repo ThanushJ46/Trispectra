@@ -196,13 +196,13 @@ flowchart LR
 
 ### Training Results
 
-![Training Metrics](docs/results.png)
+![Training Metrics](./results%20.png)
 
 The model was trained end-to-end and evaluated across all 37 classes. Training curves show stable convergence with no overfitting, enabled by aggressive data augmentation and learning rate scheduling.
 
 ### Confusion Matrix — 37-Class Classification
 
-![Confusion Matrix](docs/confusion_matrix.png)
+![Confusion Matrix](./confusion_matrix%20.png)
 
 **Key observations from the confusion matrix:**
 
