@@ -7,11 +7,12 @@ function I({ n, f, c = '', s = {} }) {
 
 export default function StoreScreen({ userStats }) {
   const [tab, setTab] = useState('products');
-  const [localPoints, setLocalPoints] = useState(userStats?.total_points || 2500);
+  const [localPoints, setLocalPoints] = useState(userStats?.total_points || 120);
   const [history, setHistory] = useState([
-    { id: 1, type: 'earn', title: 'Recycled 2 PET Bottles', pts: 40, date: 'Today' },
-    { id: 2, type: 'earn', title: 'Compost Checkpoint Reached', pts: 100, date: 'Yesterday' },
-    { id: 3, type: 'spend', title: 'Redeemed 10% Off Coupon', pts: -500, date: '3 days ago' },
+    { id: 1, type: 'earn', title: 'Recycled 2 PET Bottles', pts: 4, date: 'Today' },
+    { id: 2, type: 'earn', title: 'Compost Checkpoint Reached', pts: 5, date: 'Yesterday' },
+    { id: 3, type: 'earn', title: 'Scanned kitchen waste', pts: 6, date: '2 days ago' },
+    { id: 4, type: 'spend', title: 'Redeemed 10% Off Coupon', pts: -500, date: '5 days ago' },
   ]);
   const [toast, setToast] = useState('');
 
@@ -20,7 +21,7 @@ export default function StoreScreen({ userStats }) {
       id: 'p1',
       name: 'Bamboo Toothbrush',
       desc: '100% biodegradable handle',
-      pts: 150,
+      pts: 500,
       color: '#2d6a4f',
       img: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=400&q=80',
     },
@@ -28,7 +29,7 @@ export default function StoreScreen({ userStats }) {
       id: 'p2',
       name: 'Eco Phone Cover',
       desc: 'Made from ocean plastic',
-      pts: 800,
+      pts: 2500,
       color: '#1f5eac',
       img: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80',
     },
@@ -36,7 +37,7 @@ export default function StoreScreen({ userStats }) {
       id: 'p3',
       name: 'Recycled Shoes',
       desc: 'Stylish & sustainable footprint',
-      pts: 2500,
+      pts: 8000,
       color: '#e8a020',
       img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80',
     },
@@ -44,7 +45,7 @@ export default function StoreScreen({ userStats }) {
       id: 'p4',
       name: 'Zero-Waste Book',
       desc: 'Guide to sustainable living',
-      pts: 600,
+      pts: 1500,
       color: '#7e22ce',
       img: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80',
     },
@@ -52,16 +53,16 @@ export default function StoreScreen({ userStats }) {
       id: 'p5',
       name: 'Bamboo Specs',
       desc: 'UV400 polarized wooden frame',
-      pts: 1200,
+      pts: 4000,
       color: '#0f5238',
       img: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&q=80',
     },
   ];
 
   const coupons = [
-    { id: 'c1', name: '10% Off Organic Store', desc: 'Valid on all grocery items', pts: 300 },
-    { id: 'c2', name: '$5 Off EcoWear', desc: 'Sustainable fashion apparel', pts: 500 },
-    { id: 'c3', name: 'Free Coffee @ GreenCafe', desc: 'Bring your own cup!', pts: 200 },
+    { id: 'c1', name: '10% Off Organic Store', desc: 'Valid on all grocery items', pts: 750 },
+    { id: 'c2', name: '$5 Off EcoWear', desc: 'Sustainable fashion apparel', pts: 1200 },
+    { id: 'c3', name: 'Free Coffee @ GreenCafe', desc: 'Bring your own cup!', pts: 400 },
   ];
 
   const handleBuy = (item) => {

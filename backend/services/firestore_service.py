@@ -106,7 +106,7 @@ def update_checkpoint(uid: str, day: int, status: str = "completed") -> dict:
     Also awards points and updates leaderboard doc.
     """
     db = _get_db()
-    points_earned = 50 if status == "completed" else 0
+    points_earned = 5 if status == "completed" else 0
     if db is None:
         return {"uid": uid, "day": day, "status": status, "points_earned": points_earned}
 
@@ -170,8 +170,8 @@ def _add_points(uid: str, points: int, reason: str):
         })
 
 def _points_to_kg(points: int) -> float:
-    """Rough conversion: 50 points ≈ 0.5 kg diverted."""
-    return round(points * 0.01, 2)
+    """Rough conversion: 5 points ≈ 0.5 kg diverted."""
+    return round(points * 0.1, 2)
 
 def get_leaderboard_top10() -> list:
     """Return top 10 users sorted by total_points."""
@@ -197,12 +197,12 @@ def get_user_stats(uid: str) -> Optional[dict]:
     if uid.startswith("demo-"):
         return {
             "uid": uid,
-            "total_points": 1200,
-            "kg_diverted": 5.4,
-            "items_disposed": 24,
-            "streak_days": 3,
-            "trees_equivalent": 0.27,
-            "bottles_rescued": 216
+            "total_points": 120,
+            "kg_diverted": 1.2,
+            "items_disposed": 8,
+            "streak_days": 2,
+            "trees_equivalent": 0.06,
+            "bottles_rescued": 48
         }
     db = _get_db()
     if db is None: return None

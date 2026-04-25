@@ -43,7 +43,7 @@ async def analyze(payload: AnalyzeRequest) -> AnalysisResult:
 
     # Award 10 points per item detected, save analysis (Wrap in try/except to prevent blocking on Firebase issues)
     try:
-        points = len(result.items) * 10
+        points = len(result.items) * 2
         _add_points(payload.uid, points, "waste_scan")
         
         # Save to Firestore
