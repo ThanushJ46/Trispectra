@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { fbAuth, GoogleAuthProvider, signInWithPopup, firebaseEnabled } from './firebase.js';
 import { apiRequest } from './utils/api.js';
 import NewResultScreen from './components/ResultScreen.jsx';
-
+import StoreScreen from './components/StoreScreen.jsx';
 
 
 
@@ -22,21 +22,21 @@ function BottomNav({active,onNav}){
 const items=[{id:'home',i:'home',l:'HOME'},{id:'vendors',i:'store',l:'VENDORS'},{id:'scanner',i:'center_focus_strong',l:'SCAN'},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}];
 return(<div className="absolute bottom-0 left-0 right-0 h-20 bg-white rounded-t-[24px] border-t border-gray-200 flex items-center justify-around px-2 z-30" style={{boxShadow:'0 -2px 10px rgba(0,0,0,.05)'}}>{items.map(it=>(<button key={it.id} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5 relative pt-1 pb-1 px-1"><I n={it.i} f={active===it.id} s={{color:active===it.id?'#2D6A4F':'#9ca3af',fontSize:'24px'}}/><span className="text-[10px] uppercase tracking-wider font-medium" style={{color:active===it.id?'#2D6A4F':'#9ca3af'}}>{it.l}</span>{active===it.id&&<div className="absolute -bottom-0 w-1 h-1 rounded-full" style={{background:'#2D6A4F'}}/>}</button>))}</div>);
 }
-function ChatModal({open,onClose}){
-const [msgs,setMsgs]=useState([{f:'b',t:"Hi! I can help you with composting tips, waste disposal guidance, or anything about WasteWise. What would you like to know?"}]);
-const [inp,setInp]=useState('');const ref=useRef(null);
-useEffect(()=>{if(ref.current)ref.current.scrollTop=ref.current.scrollHeight},[msgs]);
-const send=(x)=>{const txt=x||inp;if(!txt.trim())return;setMsgs(p=>[...p,{f:'u',t:txt}]);setInp('');setTimeout(()=>setMsgs(p=>[...p,{f:'b',t:botReply(txt)}]),800);};
-if(!open)return null;
-return(<div className="absolute inset-0 z-50 flex items-end" onClick={onClose}><div className="absolute inset-0 bg-black/40"/>
-<div className="relative bg-white rounded-t-[32px] p-6 w-full flex flex-col" style={{maxHeight:'70%'}} onClick={e=>e.stopPropagation()}>
-<div className="flex items-center justify-between mb-4"><h2 className="font-bold text-xl">Ask WasteWise 🤖</h2><button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><I n="close"/></button></div>
-<div ref={ref} className="flex-1 overflow-y-auto space-y-3 mb-4" style={{minHeight:200}}>
-{msgs.map((m,i)=>(<div key={i} className={`max-w-[85%] p-3 text-sm ${m.f==='b'?'bg-[#e8f5e9] rounded-[16px] rounded-tl-sm text-[#151c22]':'bg-[#2d6a4f] text-white rounded-[16px] rounded-tr-sm ml-auto'}`}>{m.t}</div>))}
-</div>
-<div className="flex gap-2 mb-3 overflow-x-auto pb-1">{["Composting tips","E-waste near me","Reduce plastic"].map(c=>(<button key={c} onClick={()=>send(c)} className="whitespace-nowrap bg-[#e8eef7] text-[#404943] text-xs px-3 py-2 rounded-full border border-[#bfc9c1]/50">{c}</button>))}</div>
-<div className="flex gap-2"><input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()} placeholder="Type a message..." className="flex-1 bg-[#f6f9ff] rounded-[20px] border border-[#bfc9c1] px-4 py-3 text-sm outline-none"/><button onClick={()=>send()} className="bg-[#2d6a4f] text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><I n="send" s={{fontSize:'18px'}}/></button></div>
-</div></div>);
+function ChatModal({ open, onClose }) {
+  const [msgs, setMsgs] = useState([{ f: 'b', t: "Hi! I can help you with composting tips, waste disposal guidance, or anything about WasteWise. What would you like to know?" }]);
+  const [inp, setInp] = useState(''); const ref = useRef(null);
+  useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight }, [msgs]);
+  const send = (x) => { const txt = x || inp; if (!txt.trim()) return; setMsgs(p => [...p, { f: 'u', t: txt }]); setInp(''); setTimeout(() => setMsgs(p => [...p, { f: 'b', t: botReply(txt) }]), 800); };
+  if (!open) return null;
+  return (<div className="absolute inset-0 z-50 flex items-end" onClick={onClose}><div className="absolute inset-0 bg-black/40" />
+    <div className="relative bg-white rounded-t-[32px] p-6 w-full flex flex-col" style={{ maxHeight: '70%' }} onClick={e => e.stopPropagation()}>
+      <div className="flex items-center justify-between mb-4"><h2 className="font-bold text-xl">Ask WasteWise 🤖</h2><button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><I n="close" /></button></div>
+      <div ref={ref} className="flex-1 overflow-y-auto space-y-3 mb-4" style={{ minHeight: 200 }}>
+        {msgs.map((m, i) => (<div key={i} className={`max-w-[85%] p-3 text-sm ${m.f === 'b' ? 'bg-[#e8f5e9] rounded-[16px] rounded-tl-sm text-[#151c22]' : 'bg-[#2d6a4f] text-white rounded-[16px] rounded-tr-sm ml-auto'}`}>{m.t}</div>))}
+      </div>
+      <div className="flex gap-2 mb-3 overflow-x-auto pb-1">{["Composting tips", "E-waste near me", "Reduce plastic"].map(c => (<button key={c} onClick={() => send(c)} className="whitespace-nowrap bg-[#e8eef7] text-[#404943] text-xs px-3 py-2 rounded-full border border-[#bfc9c1]/50">{c}</button>))}</div>
+      <div className="flex gap-2"><input value={inp} onChange={e => setInp(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="Type a message..." className="flex-1 bg-[#f6f9ff] rounded-[20px] border border-[#bfc9c1] px-4 py-3 text-sm outline-none" /><button onClick={() => send()} className="bg-[#2d6a4f] text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><I n="send" s={{ fontSize: '18px' }} /></button></div>
+    </div></div>);
 }
 function LoginScreen({ onLogin }) {
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ function LoginScreen({ onLogin }) {
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-8"
-      style={{background: 'linear-gradient(135deg, #1a3a1a 0%, #2d6a4f 100%)', borderRadius: 'inherit'}}>
+      style={{ background: 'linear-gradient(135deg, #1a3a1a 0%, #2d6a4f 100%)', borderRadius: 'inherit' }}>
       <div className="text-6xl mb-4">🌱</div>
       <h1 className="text-3xl font-black text-white mb-2">WasteWise</h1>
       <p className="text-white/70 text-sm text-center mb-6">
@@ -113,14 +113,14 @@ function VendorsScreen() {
     try {
       const d = await apiRequest(`/api/vendors?category=${cat}`);
       setVendors(d.vendors || []);
-    } catch(e) { console.error(e); }
+    } catch (e) { console.error(e); }
     setLoading(false);
   };
 
   return (
     <div className="pt-20 px-5 pb-[100px]">
       <h1 className="text-2xl font-bold text-[#151c22] mb-4">Collection Points</h1>
-      
+
       {/* Mock Map Section */}
       <div className="relative w-full h-48 rounded-[24px] overflow-hidden mb-5 border border-[#bfc9c1]/40 bg-[#e8eef7]">
         {/* Simple CSS pattern to look like a map grid */}
@@ -133,10 +133,10 @@ function VendorsScreen() {
           📍 3 Vendors Nearby
         </div>
         {/* Mock Pins */}
-        <div className="absolute top-[30%] left-[20%] text-2xl" style={{animation: 'bounce 2s infinite'}}>📍</div>
-        <div className="absolute top-[50%] left-[60%] text-2xl" style={{animation: 'bounce 2.2s infinite'}}>📍</div>
-        <div className="absolute top-[70%] left-[30%] text-2xl" style={{animation: 'bounce 1.8s infinite'}}>📍</div>
-        
+        <div className="absolute top-[30%] left-[20%] text-2xl" style={{ animation: 'bounce 2s infinite' }}>📍</div>
+        <div className="absolute top-[50%] left-[60%] text-2xl" style={{ animation: 'bounce 2.2s infinite' }}>📍</div>
+        <div className="absolute top-[70%] left-[30%] text-2xl" style={{ animation: 'bounce 1.8s infinite' }}>📍</div>
+
         {/* User Location */}
         <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
           <div className="w-4 h-4 bg-[#1f5eac] rounded-full border-2 border-white shadow-md relative">
@@ -148,10 +148,10 @@ function VendorsScreen() {
         {categories.map(c => (
           <button key={c.name} onClick={() => loadVendors(c.name)}
             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold border transition-colors
-              ${selected === c.name 
-                ? 'bg-[#2d6a4f] text-white border-[#2d6a4f]' 
+              ${selected === c.name
+                ? 'bg-[#2d6a4f] text-white border-[#2d6a4f]'
                 : 'bg-white text-[#404943] border-[#bfc9c1]/50'}`}>
-            {c.name.replace(/_/g,' ')} ({c.vendor_count})
+            {c.name.replace(/_/g, ' ')} ({c.vendor_count})
           </button>
         ))}
       </div>
@@ -164,16 +164,25 @@ function VendorsScreen() {
             <div className="flex flex-wrap gap-1 mt-2">
               {(v.categories || []).map(c => (
                 <span key={c} className="text-xs bg-[#e8f5e9] text-[#0f5238] px-2 py-0.5 rounded-full">
-                  {c.replace(/_/g,' ')}
+                  {c.replace(/_/g, ' ')}
                 </span>
               ))}
             </div>
-            {v.phone && (
-              <a href={`tel:${v.phone}`}
-                className="mt-3 inline-flex items-center gap-2 bg-[#2d6a4f] text-white text-sm px-4 py-2 rounded-full">
-                📞 Call Now
-              </a>
-            )}
+            <div className="flex gap-2 flex-wrap">
+              {v.phone && (
+                <a href={`tel:${v.phone}`}
+                  className="mt-3 inline-flex items-center gap-2 bg-[#2d6a4f] text-white text-sm px-4 py-2 rounded-full">
+                  📞 Call Now
+                </a>
+              )}
+              {v.address && (
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name + ' ' + v.address)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-2 bg-white border border-[#2d6a4f] text-[#2d6a4f] text-sm px-4 py-2 rounded-full">
+                  📍 Directions
+                </a>
+              )}
+            </div>
           </div>
         ))}
         {!loading && selected && vendors.length === 0 && (
@@ -188,7 +197,7 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
   const displayName = user?.displayName?.split(' ')[0] || 'Friend';
   const hour = new Date().getHours();
   const greetingKey = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  
+
   const points = userStats?.total_points || 0;
   const kgDiverted = userStats?.kg_diverted || 0;
   const streak = userStats?.streak_days || 0;
@@ -200,9 +209,9 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
     <div className="pt-20 px-5 pb-[100px] space-y-4 max-w-md mx-auto">
       <div className="flex justify-end mb-1 anim">
         <div className="flex bg-white rounded-full border border-[#bfc9c1]/50 overflow-hidden text-xs font-semibold">
-          {[['en','EN'],['hi','हि'],['kn','ಕ']].map(([k,l])=>(
-            <button key={k} onClick={()=>setLang(k)} 
-              className={`px-3 py-1.5 transition-colors ${lang===k?'bg-[#2d6a4f] text-white':'text-[#404943]'}`}>
+          {[['en', 'EN'], ['hi', 'हि'], ['kn', 'ಕ']].map(([k, l]) => (
+            <button key={k} onClick={() => setLang(k)}
+              className={`px-3 py-1.5 transition-colors ${lang === k ? 'bg-[#2d6a4f] text-white' : 'text-[#404943]'}`}>
               {l}
             </button>
           ))}
@@ -221,7 +230,7 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
       )}
       <div className="card anim d2 flex flex-col items-center">
         <h3 className="font-semibold text-xl self-start">{t.d}</h3>
-        <svg width="160" height="160" viewBox="0 0 160 160" className="my-4"><circle cx="80" cy="80" r="64" fill="none" stroke="#dce3ec" strokeWidth="12"/><circle cx="80" cy="80" r="64" fill="none" stroke="#2d6a4f" strokeWidth="12" strokeLinecap="round" strokeDasharray="402.12" strokeDashoffset="100.53" transform="rotate(-90 80 80)"/><text x="80" y="75" textAnchor="middle" className="text-2xl font-bold" fill="#151c22">{points}</text><text x="80" y="95" textAnchor="middle" className="text-sm" fill="#404943">Points</text></svg>
+        <svg width="160" height="160" viewBox="0 0 160 160" className="my-4"><circle cx="80" cy="80" r="64" fill="none" stroke="#dce3ec" strokeWidth="12" /><circle cx="80" cy="80" r="64" fill="none" stroke="#2d6a4f" strokeWidth="12" strokeLinecap="round" strokeDasharray="402.12" strokeDashoffset="100.53" transform="rotate(-90 80 80)" /><text x="80" y="75" textAnchor="middle" className="text-2xl font-bold" fill="#151c22">{points}</text><text x="80" y="95" textAnchor="middle" className="text-sm" fill="#404943">Points</text></svg>
         <p className="text-[#404943]">{itemsDisposed} items properly sorted.</p>
         <p className="text-[#2d6a4f] font-semibold text-sm mt-1">
           You prevented ~{kgDiverted.toFixed(1)} kg waste from landfill
@@ -231,21 +240,21 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
         <div className="card-s h-32 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[#404943] text-sm">Total Points</span>
-            <I n="star" f s={{color:'#f59e0b',fontSize:'20px'}}/>
+            <I n="star" f s={{ color: '#f59e0b', fontSize: '20px' }} />
           </div>
           <div>
             <span className="text-xl font-semibold">{points.toLocaleString()}</span>
-            <br/><span className="text-xs font-semibold text-[#2d6a4f]">Impact score</span>
+            <br /><span className="text-xs font-semibold text-[#2d6a4f]">Impact score</span>
           </div>
         </div>
         <div className="card-s h-32 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[#404943] text-sm">Recent Scans</span>
-            <I n="center_focus_strong" f s={{color:'#1f5eac',fontSize:'20px'}}/>
+            <I n="center_focus_strong" f s={{ color: '#1f5eac', fontSize: '20px' }} />
           </div>
           <div>
             <span className="text-xl font-semibold">{itemsDisposed}</span>
-            <br/><span className="text-xs font-semibold text-[#2d6a4f]">Total</span>
+            <br /><span className="text-xs font-semibold text-[#2d6a4f]">Total</span>
           </div>
         </div>
       </div>
@@ -255,19 +264,19 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
         {kgDiverted > 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">🗑️ {kgDiverted.toFixed(1)} kg diverted</span>}
         {points === 0 && <span className="bg-white border border-[#bfc9c1]/40 rounded-full px-3 py-2 text-xs font-semibold text-[#404943] whitespace-nowrap">🌱 Start sorting to earn impact!</span>}
       </div>
-      <div className="anim d5 bg-[#2d6a4f] rounded-[24px] p-6 flex justify-between items-center cursor-pointer" onClick={()=>onNav('scanner')}>
+      <div className="anim d5 bg-[#2d6a4f] rounded-[24px] p-6 flex justify-between items-center cursor-pointer" onClick={() => onNav('scanner')}>
         <div>
           <h3 className="text-white font-semibold text-xl">{t.r}</h3>
           <p className="text-white/90">{t.s}</p>
         </div>
         <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center">
-          <I n="center_focus_strong" s={{color:'#2d6a4f'}}/>
+          <I n="center_focus_strong" s={{ color: '#2d6a4f' }} />
         </div>
       </div>
     </div>
   );
 }
-function ScannerScreen({onNav, onChat, fileRef, onCapture}) {
+function ScannerScreen({ onNav, onChat, fileRef, onCapture }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [streamActive, setStreamActive] = useState(false);
@@ -299,14 +308,14 @@ function ScannerScreen({onNav, onChat, fileRef, onCapture}) {
 
   const takeSnapshot = () => {
     if (!videoRef.current || !canvasRef.current || !streamActive) return;
-    
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    
+
     let width = video.videoWidth;
     let height = video.videoHeight;
     const MAX_SIZE = 1024;
-    
+
     if (width > height && width > MAX_SIZE) {
       height *= MAX_SIZE / width;
       width = MAX_SIZE;
@@ -314,13 +323,13 @@ function ScannerScreen({onNav, onChat, fileRef, onCapture}) {
       width *= MAX_SIZE / height;
       height = MAX_SIZE;
     }
-    
+
     canvas.width = width;
     canvas.height = height;
-    
+
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, width, height);
-    
+
     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
     onCapture(dataUrl);
   };
@@ -328,42 +337,42 @@ function ScannerScreen({onNav, onChat, fileRef, onCapture}) {
   return (
     <div className="absolute inset-0 z-10 bg-black">
       {/* Live Video Feed */}
-      <video 
+      <video
         ref={videoRef}
-        autoPlay 
-        playsInline 
-        muted 
+        autoPlay
+        playsInline
+        muted
         className="absolute inset-0 w-full h-full object-cover"
       />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
       {/* Overlay UI */}
-      <div className="absolute inset-0 pointer-events-none" style={{background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)'}} />
-      
-      <div className="absolute flex items-center justify-center pointer-events-none" style={{top:60,left:0,right:0,bottom:320}}>
-        <div className="relative" style={{width:220,height:220}}>
-          <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]"/>
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-lg"/>
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-lg"/>
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-lg"/>
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-lg"/>
-          <div className="absolute left-0 right-0 h-[2px] bg-[#4ade80]/60 shadow-[0_0_8px_#4ade80]" style={{animation:'scanline 2s ease-in-out infinite alternate',top:'50%'}}/>
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.6) 100%)' }} />
+
+      <div className="absolute flex items-center justify-center pointer-events-none" style={{ top: 60, left: 0, right: 0, bottom: 320 }}>
+        <div className="relative" style={{ width: 220, height: 220 }}>
+          <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]" />
+          <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-lg" />
+          <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-lg" />
+          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-lg" />
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-lg" />
+          <div className="absolute left-0 right-0 h-[2px] bg-[#4ade80]/60 shadow-[0_0_8px_#4ade80]" style={{ animation: 'scanline 2s ease-in-out infinite alternate', top: '50%' }} />
         </div>
       </div>
-<div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]"/>
-      <p className="absolute left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg" style={{bottom:298}}>Align waste inside the box</p>
-      
-      <div className="absolute left-0 right-0 px-6 pointer-events-auto" style={{bottom:190}}>
+      <div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]" />
+      <p className="absolute left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg" style={{ bottom: 298 }}>Align waste inside the box</p>
+
+      <div className="absolute left-0 right-0 px-6 pointer-events-auto" style={{ bottom: 190 }}>
         <p className="text-white/50 text-xs text-center mb-2">── or ──</p>
-        <button onClick={()=>fileRef.current&&fileRef.current.click()} className="bg-white/15 backdrop-blur border border-white/25 text-white rounded-[20px] px-5 py-2.5 w-full flex items-center justify-center gap-2 text-sm font-medium hover:bg-white/25 transition-colors"><I n="photo_library" s={{fontSize:'18px'}}/>Upload from Gallery</button>
+        <button onClick={() => fileRef.current && fileRef.current.click()} className="bg-white/15 backdrop-blur border border-white/25 text-white rounded-[20px] px-5 py-2.5 w-full flex items-center justify-center gap-2 text-sm font-medium hover:bg-white/25 transition-colors"><I n="photo_library" s={{ fontSize: '18px' }} />Upload from Gallery</button>
       </div>
-      
-      <div className="absolute left-0 right-0 px-6 flex justify-between items-center pointer-events-auto" style={{bottom:100}}>
-        <div className="w-14"/>
+
+      <div className="absolute left-0 right-0 px-6 flex justify-between items-center pointer-events-auto" style={{ bottom: 100 }}>
+        <div className="w-14" />
         <button onClick={takeSnapshot} disabled={!streamActive} className="w-[72px] h-[72px] rounded-full flex items-center justify-center border-4 border-white/30 bg-[#2D6A4F] disabled:opacity-50">
-          <I n="camera_alt" c="text-white" s={{fontSize:'32px'}}/>
+          <I n="camera_alt" c="text-white" s={{ fontSize: '32px' }} />
         </button>
-        <button onClick={onChat} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"><I n="forum" s={{color:'#2D6A4F',fontSize:'20px'}}/></button>
+        <button onClick={onChat} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"><I n="forum" s={{ color: '#2D6A4F', fontSize: '20px' }} /></button>
       </div>
       
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-black/40 backdrop-blur rounded-t-[24px] flex items-center justify-around px-2 pointer-events-auto">
@@ -372,7 +381,9 @@ function ScannerScreen({onNav, onChat, fileRef, onCapture}) {
             <I n={it.i} f={!!it.a} s={{color:it.a?'#fff':'rgba(255,255,255,.5)',fontSize:'22px'}}/>
             <span className="text-[10px] uppercase tracking-wider font-medium" style={{color:it.a?'#fff':'rgba(255,255,255,.5)'}}>{it.l}</span>
           </button>
-        ))}
+        );
+        })}
+      </div>
       </div>
     </div>
   );
@@ -412,17 +423,17 @@ function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
 
   return (
     <div className="pt-20 px-5 pb-32 flex flex-col gap-5">
-      <div className="anim w-full rounded-[24px] overflow-hidden border-2 border-[#2d6a4f]/30" style={{aspectRatio:'1/1'}}>
-        {imgUrl 
-          ? <img src={imgUrl} className="w-full h-full object-cover"/>
+      <div className="anim w-full rounded-[24px] overflow-hidden border-2 border-[#2d6a4f]/30" style={{ aspectRatio: '1/1' }}>
+        {imgUrl
+          ? <img src={imgUrl} className="w-full h-full object-cover" />
           : <div className="w-full h-full bg-[#e8eef7] flex flex-col items-center justify-center gap-2">
-              <I n="image" s={{fontSize:'48px',color:'#9ca3af'}}/>
-              <span className="text-sm text-[#404943]">No image selected</span>
-            </div>
+            <I n="image" s={{ fontSize: '48px', color: '#9ca3af' }} />
+            <span className="text-sm text-[#404943]">No image selected</span>
+          </div>
         }
       </div>
       <div className="anim d1 bg-[#e8f5e9] rounded-[24px] p-4 border border-[#2d6a4f]/20 flex items-center gap-3">
-        <I n="eco" s={{color:'#2d6a4f',fontSize:'24px'}}/>
+        <I n="eco" s={{ color: '#2d6a4f', fontSize: '24px' }} />
         <div>
           <p className="font-semibold text-[#151c22] text-sm">Image ready for analysis</p>
           <p className="text-[#404943] text-xs mt-0.5">Local YOLO AI will identify trained waste items</p>
@@ -430,23 +441,23 @@ function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
       </div>
       <button onClick={() => fileRef.current && fileRef.current.click()}
         className="anim d3 bg-[#f6f9ff] border border-[#bfc9c1] text-[#404943] rounded-[20px] w-full h-12 font-medium text-sm flex items-center justify-center gap-2">
-        <I n="refresh" s={{fontSize:'18px'}}/>Retake / Reselect
+        <I n="refresh" s={{ fontSize: '18px' }} />Retake / Reselect
       </button>
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-[16px] p-4 text-red-700 text-sm">
           {error}
         </div>
       )}
-      {loading 
+      {loading
         ? <div className="anim bg-[#2d6a4f]/10 rounded-[24px] w-full h-14 flex items-center justify-center gap-3">
-            <div className="w-5 h-5 border-2 border-[#2d6a4f] border-t-transparent rounded-full" style={{animation:'spin 1s linear infinite'}}/>
-            <span className="text-[#2d6a4f] font-medium text-sm">AI is analysing your waste...</span>
-          </div>
+          <div className="w-5 h-5 border-2 border-[#2d6a4f] border-t-transparent rounded-full" style={{ animation: 'spin 1s linear infinite' }} />
+          <span className="text-[#2d6a4f] font-medium text-sm">AI is analysing your waste...</span>
+        </div>
         : <button onClick={analyse} disabled={!imgUrl}
-            className="anim d4 bg-[#2d6a4f] text-white rounded-[24px] w-full h-14 font-semibold text-base disabled:opacity-50"
-            style={{boxShadow:'0 4px 12px rgba(45,106,79,0.25)'}}>
-            Analyse My Waste →
-          </button>
+          className="anim d4 bg-[#2d6a4f] text-white rounded-[24px] w-full h-14 font-semibold text-base disabled:opacity-50"
+          style={{ boxShadow: '0 4px 12px rgba(45,106,79,0.25)' }}>
+          Analyse My Waste →
+        </button>
       }
     </div>
   );
@@ -469,7 +480,7 @@ function LeaderboardScreen({ user, userStats }) {
 
   const myPoints = userStats?.total_points || 0;
   const myKg = userStats?.kg_diverted || 0;
-  
+
   const myRankInTop10 = leaders.findIndex(l => l.uid === user?.uid) + 1;
 
   const badgeForPoints = (pts) => {
@@ -513,21 +524,21 @@ function LeaderboardScreen({ user, userStats }) {
               <div key={i} className={`flex items-center gap-3 ${isMe ? 'bg-[#f0fdf4] rounded-[16px] px-3 py-2' : ''}`}>
                 <span className="text-xl font-bold text-[#151c22] w-8">{row.rank}</span>
                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
-                  style={{background: isMe ? '#2d6a4f' : '#64748b'}}>
+                  style={{ background: isMe ? '#2d6a4f' : '#64748b' }}>
                   {initials}
                 </div>
                 <div className="flex-1">
                   <p className={`font-semibold ${isMe ? 'text-[#2d6a4f]' : 'text-[#151c22]'}`}>
-                    {isMe ? 'You' : (row.display_name || `User ${row.uid?.substring(0,6)}`)}
+                    {isMe ? 'You' : (row.display_name || `User ${row.uid?.substring(0, 6)}`)}
                   </p>
                   <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                    style={{background: badge.bg, color: badge.color}}>{badge.label}</span>
+                    style={{ background: badge.bg, color: badge.color }}>{badge.label}</span>
                 </div>
                 <div className="text-right">
                   <span className={`text-xl font-bold ${isMe ? 'text-[#2d6a4f]' : 'text-[#151c22]'}`}>
                     {(row.total_points || 0).toLocaleString()}
                   </span>
-                  <br/><span className="text-xs text-[#404943]">pts</span>
+                  <br /><span className="text-xs text-[#404943]">pts</span>
                 </div>
               </div>
             );
@@ -545,7 +556,7 @@ function JourneyScreen({ user, userStats, onNav }) {
   const kgDiverted = userStats?.kg_diverted || 0;
   const treesEquiv = userStats?.trees_equivalent || 0;
   const bottlesRescued = userStats?.bottles_rescued || 0;
-  
+
   const quotes = [
     "Recycling one ton of paper saves 17 trees and 7,000 gallons of water. Be the change—one bin at a time!",
     "Turn waste into wonder: Recycling isn't just good for the planet; it's your superpower for a greener tomorrow.",
@@ -557,8 +568,8 @@ function JourneyScreen({ user, userStats, onNav }) {
     <div className="pt-20 px-5 pb-[100px] space-y-5">
       <h1 className="text-3xl font-black text-[#151c22] leading-tight anim">Personal Impact Dashboard</h1>
       <p className="text-[#404943] text-sm mt-2 anim d1">See the real-world difference you're making.</p>
-      
-      <div className="card anim d2" style={{background: 'linear-gradient(135deg, #2d6a4f 0%, #1e3a2e 100%)'}}>
+
+      <div className="card anim d2" style={{ background: 'linear-gradient(135deg, #2d6a4f 0%, #1e3a2e 100%)' }}>
         <h2 className="text-white font-bold text-lg mb-2">Your Eco-Footprint</h2>
         <p className="text-white/90 text-sm italic mb-4">"{quote}"</p>
         <div className="grid grid-cols-2 gap-3 mt-4">
@@ -574,7 +585,7 @@ function JourneyScreen({ user, userStats, onNav }) {
           </div>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4 anim d3">
         <div className="card-s flex flex-col justify-center items-center h-32">
           <span className="text-3xl font-black text-[#2d6a4f]">{kgDiverted.toFixed(1)}</span>
@@ -588,14 +599,14 @@ function JourneyScreen({ user, userStats, onNav }) {
 
       <div className="card anim d4 bg-[#e8f5e9] border border-[#2d6a4f]/20">
         <div className="flex items-center gap-3 mb-3">
-          <I n="psychology" s={{color:'#2d6a4f',fontSize:'24px'}}/>
+          <I n="psychology" s={{ color: '#2d6a4f', fontSize: '24px' }} />
           <h3 className="font-semibold text-lg text-[#151c22]">Your Progress</h3>
         </div>
         <p className="text-sm text-[#404943]">
           You have successfully diverted <strong>{kgDiverted.toFixed(1)} kg</strong> of waste from landfills. That's a <strong>{(kgDiverted === 0 ? 0 : 15.5).toFixed(1)}%</strong> improvement this month! Keep up the great work sorting your items correctly.
         </p>
         <div className="mt-4 h-2 bg-[#dce3ec] rounded-full overflow-hidden">
-          <div className="h-full bg-[#2d6a4f] rounded-full" style={{width: `${Math.min(100, (kgDiverted / 10) * 100)}%`}}></div>
+          <div className="h-full bg-[#2d6a4f] rounded-full" style={{ width: `${Math.min(100, (kgDiverted / 10) * 100)}%` }}></div>
         </div>
         <div className="flex justify-between text-xs text-[#404943] mt-2 font-medium">
           <span>0 kg</span>
@@ -605,14 +616,14 @@ function JourneyScreen({ user, userStats, onNav }) {
     </div>
   );
 }
-function showPushNotif(title, options) { if ('serviceWorker' in navigator) { navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, options).catch(e => console.error('SW notif error:', e)); }); } else { try { new Notification(title, options); } catch(e) { console.error('Notif error:', e); } } }
+function showPushNotif(title, options) { if ('serviceWorker' in navigator) { navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, options).catch(e => console.error('SW notif error:', e)); }); } else { try { new Notification(title, options); } catch (e) { console.error('Notif error:', e); } } }
 function App() {
   const [scr, setScr] = useState('home');
   const [chat, setChat] = useState(false);
   const [lang, setLang] = useState('en');
   const [imgUrl, setImgUrl] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
-  const [user, setUser] = useState(null);          
+  const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [userStats, setUserStats] = useState(null);
   const [showNotifModal, setShowNotifModal] = useState(false);
@@ -654,7 +665,7 @@ function App() {
         method: 'POST',
         body: JSON.stringify({ display_name: u.displayName || 'Anonymous' })
       });
-    } catch(e) { console.error(e); }
+    } catch (e) { console.error(e); }
   };
 
   const fetchUserStats = async (uid) => {
@@ -663,7 +674,7 @@ function App() {
       if (d.total_points !== undefined) {
         setUserStats(d);
       }
-    } catch(e) { console.error('Stats fetch failed:', e); }
+    } catch (e) { console.error('Stats fetch failed:', e); }
   };
 
   useEffect(() => {
@@ -675,9 +686,9 @@ function App() {
     return () => clearTimeout(t);
   }, [user]);
 
-  const handleAllowNotif=()=>{Notification.requestPermission().then(permission=>{setShowNotifModal(false);if(permission==='granted'){localStorage.setItem('notif-granted','true');showPushNotif('Welcome to WasteWise! 🌍',{body:'You\'re set up to make a real difference. Let\'s sort some waste today! ♻️'});}});};
-  const handleDismissNotif=()=>{localStorage.setItem('notif-dismissed','true');setShowNotifModal(false);};
-  const nav=(id, data)=>{if(id==='chat'){setChat(true);return;}if(id==='map'||id==='profile')return;if(data)setAnalysisResult(data);setScr(id);};
+  const handleAllowNotif = () => { Notification.requestPermission().then(permission => { setShowNotifModal(false); if (permission === 'granted') { localStorage.setItem('notif-granted', 'true'); showPushNotif('Welcome to WasteWise! 🌍', { body: 'You\'re set up to make a real difference. Let\'s sort some waste today! ♻️' }); } }); };
+  const handleDismissNotif = () => { localStorage.setItem('notif-dismissed', 'true'); setShowNotifModal(false); };
+  const nav = (id, data) => { if (id === 'chat') { setChat(true); return; } if (id === 'map' || id === 'profile') return; if (data) setAnalysisResult(data); setScr(id); };
   const handleFile = (e) => {
     const f = e.target.files[0];
     if (!f) return;
@@ -707,15 +718,15 @@ function App() {
     r.readAsDataURL(f);
     e.target.value = '';
   };
-  const showNav=scr!=='scanner'&&scr!=='upload-preview';
-  const topBack=scr==='upload-preview'?'scanner':'scanner';
+  const showNav = scr !== 'scanner' && scr !== 'upload-preview';
+  const topBack = scr === 'upload-preview' ? 'scanner' : 'scanner';
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background:'#f0f4f8'}}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#f0f4f8' }}>
         <div className="phone flex flex-col items-center justify-center">
-            <div className="text-5xl mb-4" style={{animation: 'pulse-soft 1.5s infinite'}}>🌱</div>
-            <div className="text-[#2d6a4f] font-bold">Loading WasteWise...</div>
+          <div className="text-5xl mb-4" style={{ animation: 'pulse-soft 1.5s infinite' }}>🌱</div>
+          <div className="text-[#2d6a4f] font-bold">Loading WasteWise...</div>
         </div>
       </div>
     );
@@ -723,7 +734,7 @@ function App() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{background:'#f0f4f8'}}>
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#f0f4f8' }}>
         <div className="phone">
           <LoginScreen onLogin={handleUserLogin} />
         </div>
@@ -732,7 +743,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{background:'#f0f4f8'}}>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#f0f4f8' }}>
       <div className="phone">
         <input type="file" accept="image/*" ref={fileRef} onChange={handleFile} style={{display:'none'}}/>
         {scr!=='scanner'&&<TopBar screen={scr} onBack={()=>nav(topBack)}/>}
@@ -745,19 +756,19 @@ function App() {
           {scr==='journey'&&<JourneyScreen user={user} userStats={userStats} onNav={nav}/>}
           {scr==='vendors'&&<VendorsScreen />}
         </div>
-        {showNav&&<BottomNav active={scr==='result'?'scanner':scr} onNav={nav}/>}
-        {scr==='home'&&<button onClick={()=>setChat(true)} className="absolute z-20 flex items-center gap-2 px-4 py-3 rounded-[16px] text-white" style={{background:'#2d6a4f',bottom:96,right:16}}><I n="chat" s={{fontSize:'20px'}}/><span className="text-sm font-medium">Ask WasteWise</span></button>}
-        {scr==='result'&&<button onClick={()=>setChat(true)} className="absolute z-20 flex items-center gap-3 px-5 rounded-full shadow-lg" style={{background:'#78acff',color:'#003f7e',bottom:96,right:16,height:52}}><I n="smart_toy" f s={{fontSize:'22px'}}/><span className="font-semibold text-sm">Ask WasteWise</span></button>}
-        {scr==='journey'&&<button onClick={()=>setChat(true)} className="absolute z-20 w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white" style={{background:'#2d6a4f',bottom:96,right:16}}><I n="eco" s={{fontSize:'24px'}}/></button>}
-        <ChatModal open={chat} onClose={()=>setChat(false)}/>
-        {showNotifModal&&<div className="absolute inset-0 z-[9999] flex items-end" style={{background:'rgba(0,0,0,.5)'}} onClick={handleDismissNotif}>
-          <div className="bg-white rounded-t-[32px] p-6 w-full" onClick={e=>e.stopPropagation()} style={{boxShadow:'0 -8px 32px rgba(0,0,0,.12)'}}>
+        {showNav && <BottomNav active={scr === 'result' ? 'scanner' : scr} onNav={nav} />}
+        {scr === 'home' && <button onClick={() => setChat(true)} className="absolute z-20 flex items-center gap-2 px-4 py-3 rounded-[16px] text-white" style={{ background: '#2d6a4f', bottom: 96, right: 16 }}><I n="chat" s={{ fontSize: '20px' }} /><span className="text-sm font-medium">Ask WasteWise</span></button>}
+        {scr === 'result' && <button onClick={() => setChat(true)} className="absolute z-20 flex items-center gap-3 px-5 rounded-full shadow-lg" style={{ background: '#78acff', color: '#003f7e', bottom: 96, right: 16, height: 52 }}><I n="smart_toy" f s={{ fontSize: '22px' }} /><span className="font-semibold text-sm">Ask WasteWise</span></button>}
+        {scr === 'journey' && <button onClick={() => setChat(true)} className="absolute z-20 w-14 h-14 rounded-full flex items-center justify-center shadow-lg text-white" style={{ background: '#2d6a4f', bottom: 96, right: 16 }}><I n="eco" s={{ fontSize: '24px' }} /></button>}
+        <ChatModal open={chat} onClose={() => setChat(false)} />
+        {showNotifModal && <div className="absolute inset-0 z-[9999] flex items-end" style={{ background: 'rgba(0,0,0,.5)' }} onClick={handleDismissNotif}>
+          <div className="bg-white rounded-t-[32px] p-6 w-full" onClick={e => e.stopPropagation()} style={{ boxShadow: '0 -8px 32px rgba(0,0,0,.12)' }}>
             <span className="text-5xl text-center block">🌱</span>
-            <h3 className="font-bold text-xl text-center mt-3" style={{color:'#151c22'}}>Stay on top of your waste journey</h3>
-            <p className="text-sm text-center mt-2" style={{color:'#404943'}}>Get composting reminders, streak alerts and eco tips. No spam, ever.</p>
+            <h3 className="font-bold text-xl text-center mt-3" style={{ color: '#151c22' }}>Stay on top of your waste journey</h3>
+            <p className="text-sm text-center mt-2" style={{ color: '#404943' }}>Get composting reminders, streak alerts and eco tips. No spam, ever.</p>
             <div className="flex flex-col gap-3 mt-6">
               <button onClick={handleAllowNotif} className="bg-[#2d6a4f] text-white w-full h-14 rounded-[24px] font-semibold">Allow Notifications 🔔</button>
-              <button onClick={handleDismissNotif} className="bg-[#f6f9ff] w-full h-12 rounded-[24px] font-medium text-sm" style={{color:'#404943'}}>Maybe Later</button>
+              <button onClick={handleDismissNotif} className="bg-[#f6f9ff] w-full h-12 rounded-[24px] font-medium text-sm" style={{ color: '#404943' }}>Maybe Later</button>
             </div>
           </div>
         </div>}
