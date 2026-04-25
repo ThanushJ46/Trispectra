@@ -13,12 +13,17 @@ import StoreScreen from './components/StoreScreen.jsx';
 const T={en:{g:"Good morning, Alex.",t:"You're making a difference today.",r:"Ready to sort?",s:"Scan your next item.",d:"Daily Progress"},hi:{g:"सुप्रभात, एलेक्स।",t:"आज आप बदलाव ला रहे हैं।",r:"छांटने के लिए तैयार?",s:"अगला आइटम स्कैन करें।",d:"दैनिक प्रगति"},kn:{g:"ಶುಭೋದಯ, ಅಲೆಕ್ಸ್.",t:"ನೀವು ಇಂದು ಬದಲಾವಣೆ ಮಾಡುತ್ತಿದ್ದೀರಿ.",r:"ವಿಂಗಡಿಸಲು ಸಿದ್ಧರೆ?",s:"ನಿಮ್ಮ ಮುಂದಿನ ವಸ್ತುವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",d:"ದೈನಂದಿನ ಪ್ರಗತಿ"}};
 const botReply=(m)=>{const l=m.toLowerCase();if(l.includes('compost'))return"Great question! For effective composting, maintain a ratio of 3 parts brown material to 1 part green. Turn your pile every 3-7 days for faster decomposition. 🌱";if(l.includes('ewaste')||l.includes('e-waste'))return"For e-waste, I recommend checking your local municipal collection drive. Items like phones and laptops contain valuable metals that can be recovered. ♻️";if(l.includes('plastic'))return"Great initiative! For plastic reduction, start with single-use items. Carry a reusable bag and bottle. WasteWise can help you find recycling points nearby. 💪";return"That's a great question! Proper waste disposal can reduce landfill waste by up to 60%. Keep tracking your progress — every item counts! 🌍";};
 function I({n,f,c='',s={}}){return <span className={`mi ${f?'mi-fill':''} ${c}`} style={s}>{n}</span>}
-function TopBar({screen,onBack,onNav}){
-if(screen==='upload-preview')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white z-30 border-b border-[#bfc9c1]/40"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-semibold text-lg text-[#151c22]">Review Image</span><div className="w-10"/></div>);
-if(screen==='result')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-bold text-lg" style={{color:'#2D6A4F'}}>WasteWise</span><div className="w-10"/></div>);
-if(screen==='store')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-bold text-lg" style={{color:'#2D6A4F'}}>Rewards Store</span><div className="w-10"/></div>);
-if(screen==='leaderboard')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="flex-1 text-center font-semibold text-lg" style={{color:'#2D6A4F'}}>Community Leaderboard</span><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div>);
-return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="font-black text-2xl tracking-tighter" style={{color:'#2D6A4F'}}>WasteWise</span></div><div className="flex items-center gap-1"><button onClick={()=>onNav&&onNav('store')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"><I n="local_mall" s={{color:'#404943',fontSize:'22px'}}/></button><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div></div>);
+function TopBar({screen,onBack,onNav,onLogout}){
+  const bg = 'bg-[#2d6a4f]';
+  const text = 'text-white';
+  const safePadding = { paddingTop: 'max(env(safe-area-inset-top), 16px)', paddingBottom: '16px' };
+  
+  if(screen==='upload-preview')return(<div className={`w-full flex items-center px-5 z-30 ${bg}`} style={safePadding}><button onClick={onBack} className={`w-10 h-10 flex items-center justify-center ${text}`}><I n="arrow_back"/></button><span className={`flex-1 text-center font-semibold text-lg ${text}`}>Review Image</span><div className="w-10"/></div>);
+  if(screen==='result')return(<div className={`w-full flex items-center px-5 z-30 ${bg}`} style={safePadding}><button onClick={onBack} className={`w-10 h-10 flex items-center justify-center ${text}`}><I n="arrow_back"/></button><span className={`flex-1 text-center font-bold text-lg ${text}`}>WasteWise</span><div className="w-10"/></div>);
+  if(screen==='store')return(<div className={`w-full flex items-center px-5 z-30 ${bg}`} style={safePadding}><button onClick={onBack} className={`w-10 h-10 flex items-center justify-center ${text}`}><I n="arrow_back"/></button><span className={`flex-1 text-center font-bold text-lg ${text}`}>Rewards Store</span><div className="w-10"/></div>);
+  if(screen==='leaderboard')return(<div className={`w-full flex items-center px-5 z-30 ${bg}`} style={safePadding}><div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#2d6a4f] text-xs font-bold">A</div><span className={`flex-1 text-center font-semibold text-lg ${text}`}>Leaderboard</span><button className={`w-10 h-10 flex items-center justify-center ${text}`}><I n="notifications"/></button></div>);
+  
+  return(<div className={`w-full flex items-center justify-between px-5 z-30 ${bg}`} style={safePadding}><div className="flex items-center gap-2" onClick={onLogout} title="Click to Logout"><div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#2d6a4f] text-xs font-bold cursor-pointer hover:scale-110 transition-transform">A</div><span className={`font-black text-2xl tracking-tighter ${text}`}>WasteWise</span></div><div className="flex items-center gap-1"><button onClick={()=>onNav&&onNav('store')} className={`w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors ${text}`}><I n="local_mall" s={{fontSize:'22px'}}/></button><button className={`w-10 h-10 flex items-center justify-center ${text}`}><I n="notifications"/></button></div></div>);
 }
 function BottomNav({active,onNav}){
   const { t } = useTranslation();
@@ -805,10 +810,10 @@ function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#f0f4f8' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#2d6a4f' }}>
         <div className="phone flex flex-col items-center justify-center">
           <div className="text-5xl mb-4" style={{ animation: 'pulse-soft 1.5s infinite' }}>🌱</div>
-          <div className="text-[#2d6a4f] font-bold">{t('common.loading')}</div>
+          <div className="text-white font-bold">{t('common.loading')}</div>
         </div>
       </div>
     );
@@ -816,7 +821,7 @@ function App() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#f0f4f8' }}>
+      <div className="min-h-screen flex items-center justify-center p-0 md:p-4" style={{ background: '#2d6a4f' }}>
         <div className="phone">
           <LoginScreen onLogin={handleUserLogin} />
         </div>
@@ -825,11 +830,11 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#f0f4f8' }}>
-      <div className="phone">
+    <div className="min-h-screen flex items-center justify-center p-0 md:p-4" style={{ background: '#2d6a4f' }}>
+      <div className="phone flex flex-col">
         <input type="file" accept="image/*" ref={fileRef} onChange={handleFile} style={{display:'none'}}/>
         {scr!=='scanner'&&<TopBar screen={scr} onBack={()=>nav(topBack)} onNav={nav}/>}
-        <div className="absolute inset-0 overflow-y-auto" style={{top:scr==='scanner'?0:0,bottom:0}}>
+        <div className="flex-1 relative overflow-y-auto bg-[#f6f9ff]">
           {scr==='home'&&<HomeScreen onNav={nav} user={user} userStats={userStats}/>}
           {scr==='scanner'&&<ScannerScreen onNav={nav} onChat={()=>setChat(true)} fileRef={fileRef} onCapture={(url)=>{setImgUrl(url);setScr('upload-preview');}}/>}
           {scr==='upload-preview'&&<UploadPreviewScreen onNav={nav} imgUrl={imgUrl} fileRef={fileRef} user={user} onResult={setAnalysisResult}/>}
