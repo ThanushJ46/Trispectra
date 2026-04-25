@@ -12,6 +12,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from ultralytics import YOLO
+    ULTRALYTICS_AVAILABLE = True
+except ImportError:
+    YOLO = None
+    ULTRALYTICS_AVAILABLE = False
+
 from dotenv import load_dotenv
 from PIL import Image, UnidentifiedImageError
 
@@ -27,25 +34,23 @@ load_dotenv()
 
 __all__ = ["YoloService", "analyze_waste_image"]
 
-# Paths that work both locally (with /backend prefix) and on Hugging Face (without it)
-def _resolve_path(path_str: str) -> Path:
-    p = Path(path_str)
-    if p.exists():
-        return p
-    # Try without the 'backend/' prefix if it was included
-    if path_str.startswith("backend/"):
-        alt_p = Path(path_str.replace("backend/", "", 1))
-        if alt_p.exists():
-            return alt_p
-    return p
+# Task 4 & 6: Robust relative paths
+CURRENT_FILE = Path(__file__).resolve()
+BACKEND_DIR = CURRENT_FILE.parents[1]
+PROJECT_ROOT = BACKEND_DIR.parent
 
 _DEFAULT_MODEL_PATHS = [
-    Path("models/yolo/waste_best.pt"),
-    Path("models/yolo/laptop_best.pt"),
-    Path("models/yolo/organic_best.pt"),
-    Path("models/yolo/best.pt"),
+    BACKEND_DIR / "models" / "yolo" / "waste_best.pt",
+    BACKEND_DIR / "models" / "yolo" / "laptop_best.pt",
+    BACKEND_DIR / "models" / "yolo" / "organic_best.pt",
+    BACKEND_DIR / "models" / "yolo" / "best.pt",
+    PROJECT_ROOT / "models" / "yolo" / "waste_best.pt",
+    PROJECT_ROOT / "models" / "yolo" / "laptop_best.pt",
+    PROJECT_ROOT / "models" / "yolo" / "organic_best.pt",
+    PROJECT_ROOT / "models" / "yolo" / "best.pt",
 ]
-_DEFAULT_RULES_PATH = Path("config/waste_rules.json")
+_DEFAULT_RULES_PATH = BACKEND_DIR / "config" / "waste_rules.json"
+_FALLBACK_RULES_PATH = PROJECT_ROOT / "config" / "waste_rules.json"
 _DEFAULT_GLOBAL_CONFIDENCE_THRESHOLD = 0.25
 _MODEL_DEFAULT_CONFIDENCE_THRESHOLDS = {
     "laptop_best.pt": 0.30,
@@ -88,16 +93,7 @@ class YoloService:
         if getattr(self, "_initialized", False):
             return
 
-        self._project_root = Path(__file__).resolve().parent.parent
-        # If we are in 'backend/services', project_root should be 'backend'
-        # If we are in root 'services', project_root should be '.'
-        if not (self._project_root / "config").exists():
-            # Try one level higher if config isn't found (local dev case)
-            if (self._project_root.parent / "backend" / "config").exists():
-                self._project_root = self._project_root.parent
-            elif (self._project_root.parent / "config").exists():
-                 self._project_root = self._project_root.parent
-
+        self._project_root = PROJECT_ROOT
         self.debug = self._resolve_debug_mode()
         self.model_paths = self._resolve_candidate_model_paths()
         self.rules_path = self._resolve_rules_path()
@@ -126,29 +122,15 @@ class YoloService:
 
     def _resolve_candidate_model_paths(self) -> list[Path]:
         raw_multi = os.getenv("YOLO_MODEL_PATHS", "").strip()
-        raw_single = os.getenv("YOLO_MODEL_PATH", "").strip()
-
         if raw_multi:
-            raw_paths = [part.strip() for part in raw_multi.split(",") if part.strip()]
-        elif raw_single:
-            raw_paths = [raw_single]
+            raw_paths = [Path(part.strip()) for part in raw_multi.split(",") if part.strip()]
         else:
-            raw_paths = [str(path) for path in _DEFAULT_MODEL_PATHS]
+            raw_paths = _DEFAULT_MODEL_PATHS
 
         resolved: list[Path] = []
         seen: set[str] = set()
-        for raw_path in raw_paths:
-            path = Path(raw_path).expanduser()
-            
-            # Try absolute or relative to root
-            if not path.is_absolute():
-                full_path = (self._project_root / path).resolve()
-                if not full_path.exists():
-                    # Try with 'backend/' prefix removed
-                    if raw_path.startswith("backend/"):
-                        full_path = (self._project_root / raw_path.replace("backend/", "", 1)).resolve()
-                path = full_path
-
+        for p in raw_paths:
+            path = p.resolve()
             key = str(path)
             if key in seen:
                 continue
@@ -157,17 +139,16 @@ class YoloService:
         return resolved
 
     def _resolve_rules_path(self) -> Path:
-        # Check standard path
-        path = (self._project_root / _DEFAULT_RULES_PATH).resolve()
-        if path.exists():
-            return path
+        if _DEFAULT_RULES_PATH.exists():
+            return _DEFAULT_RULES_PATH
+        if _FALLBACK_RULES_PATH.exists():
+            return _FALLBACK_RULES_PATH
             
-        # Check fallback path (adding 'backend/' back if it was stripped)
-        alt_path = (self._project_root / "backend" / _DEFAULT_RULES_PATH).resolve()
+        alt_path = (self._project_root / "backend" / "config" / "waste_rules.json").resolve()
         if alt_path.exists():
             return alt_path
             
-        raise RuntimeError(f"Waste rules file not found. Checked: {path} and {alt_path}")
+        raise RuntimeError(f"Waste rules file not found. Checked: {_DEFAULT_RULES_PATH}, {_FALLBACK_RULES_PATH}, and {alt_path}")
 
     @staticmethod
     def _parse_threshold(raw_value: str, env_var_name: str) -> float:
@@ -308,54 +289,31 @@ class YoloService:
         if _loaded_models is None:
             with _global_model_lock:
                 if _loaded_models is None:
-                    try:
-                        from ultralytics import YOLO
-                    except ImportError as exc:
+                    if not ULTRALYTICS_AVAILABLE:
                         raise RuntimeError(
-                            "ultralytics is not installed. Install it to use YOLO inference."
-                        ) from exc
+                            "ultralytics is not installed. Add it to requirements.txt and rebuild the Space."
+                        )
 
                     loaded_models: list[tuple[Path, Any]] = []
-                    existing_files = 0
-
                     for model_path in self.model_paths:
-                        exists = model_path.exists() and model_path.is_file()
-                        self._log(
-                            f"[YOLO] candidate model path: {model_path} exists={exists}"
-                        )
-                        if not exists:
-                            self._log(
-                                f"[YOLO] warning: model file missing, skipping: {model_path}"
-                            )
+                        if not model_path.exists():
+                            self._log(f"[YOLO] Missing model: {model_path}")
                             continue
-
-                        existing_files += 1
-
                         if model_path.stat().st_size == 0:
-                            self._log(
-                                f"[YOLO] warning: YOLO model file is empty, skipping: {model_path}"
-                            )
+                            self._log(f"[YOLO] Empty model: {model_path}")
                             continue
 
-                        self._log(f"[YOLO] loading model: {model_path}")
+                        self._log(f"[YOLO] Loading: {model_path}")
                         try:
                             model = YOLO(str(model_path))
                             loaded_models.append((model_path, model))
                         except Exception as exc:
-                            self._log(
-                                "[YOLO] warning: failed to load model, skipping: "
-                                f"{model_path} ({exc})"
-                            )
+                            self._log(f"[YOLO] Failed to load {model_path}: {exc}")
 
-                    if existing_files == 0:
-                        raise RuntimeError(
-                            "No YOLO model files found. Place models in backend/models/yolo/"
-                        )
                     if not loaded_models:
                         raise RuntimeError(
-                            "No YOLO models could be loaded. Check model file validity."
+                            f"No valid YOLO models found. Checked: {[str(p) for p in self.model_paths]}"
                         )
-
                     _loaded_models = loaded_models
         return _loaded_models
 

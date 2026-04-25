@@ -32,17 +32,19 @@ origins = [
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    "https://trispectra.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app|http://(localhost|127\.0\.0\.1):\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Logging and Error Handling
+# Logging
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
@@ -51,32 +53,64 @@ async def log_requests(request: Request, call_next):
     print(f"[API] {request.method} {request.url.path} - {response.status_code} - {process_time:.2f}ms")
     return response
 
+# Global Exception Handler (Task 10)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    print(f"[GLOBAL ERROR] {request.method} {request.url.path} - {str(exc)}")
     return JSONResponse(
         status_code=500,
-        content={"error": "Internal server error", "detail": str(exc)},
+        content={
+            "error": "Internal server error",
+            "detail": str(exc),
+            "path": request.url.path
+        },
     )
 
-# Your routes
+# Health Check (Task 11)
+@app.get("/health", tags=["Health"])
+async def health():
+    return {
+        "status": "ok",
+        "service": "WasteWise API",
+        "environment": "huggingface" if os.getenv("SPACE_ID") else "local"
+    }
+
+# Vision Status (Task 11)
+@app.get("/api/vision/status", tags=["Diagnostics"])
+async def vision_status():
+    from services.yolo_service import YoloService
+    try:
+        import ultralytics
+        ultralytics_available = True
+    except ImportError:
+        ultralytics_available = False
+        
+    try:
+        import torch
+        torch_available = True
+    except ImportError:
+        torch_available = False
+
+    service = YoloService()
+    return {
+        "ultralytics_available": ultralytics_available,
+        "torch_available": torch_available,
+        "python_version": sys.version,
+        "cwd": os.getcwd(),
+        "rules_file_found": service.rules_path.exists(),
+        "rules_file_path": str(service.rules_path),
+        "models": [
+            {"path": str(p), "exists": p.exists(), "size_mb": round(p.stat().st_size / (1024*1024), 2) if p.exists() else 0}
+            for p in service.model_paths
+        ]
+    }
+
+# Include routers
 app.include_router(reminders.router, prefix="/api/reminder", tags=["Reminders"])
-app.include_router(reminders.router, prefix="/api/reminders", tags=["Reminders (Alias)"])
 app.include_router(leaderboard.router, prefix="/api", tags=["Leaderboard"])
 app.include_router(vendors.router, prefix="/api", tags=["Vendors"])
 app.include_router(guides_router, prefix="/api/guides/category", tags=["Guides"])
-
-# Vision route
 app.include_router(vision_router)
 
-# Health Check
-@app.get("/", tags=["Health"])
-def health():
-    return {"status": "WasteWise API is running"}
-
-@app.get("/health", tags=["Health"])
-def health_check():
-    return {
-        "status": "ok",
-        "service": "WasteWise backend"
-    }
+@app.get("/")
+async def root():
+    return {"message": "WasteWise API is running. Visit /health for status."}

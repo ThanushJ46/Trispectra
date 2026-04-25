@@ -67,6 +67,7 @@ function ChatModal({ open, onClose }) {
       <div className="flex gap-2"><input value={inp} onChange={e => setInp(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="Type a message..." className="flex-1 bg-[#f6f9ff] rounded-[20px] border border-[#bfc9c1] px-4 py-3 text-sm outline-none" /><button onClick={() => send()} className="bg-[#2d6a4f] text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><I n="send" s={{ fontSize: '18px' }} /></button></div>
     </div></div>);
 }
+
 function LoginScreen({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -78,15 +79,20 @@ function LoginScreen({ onLogin }) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(fbAuth, provider);
     } catch (e) {
-      setError(`Google login is unavailable in this environment. Continue as Demo User for local demo. Error: ${e.message}`);
+      setError(`Google login unavailable: ${e.message}`);
       setLoading(false);
     }
   };
 
   const continueAsDemo = () => {
+    let demoId = localStorage.getItem('wastewise-persistent-demo-id');
+    if (!demoId) {
+      demoId = `demo-${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem('wastewise-persistent-demo-id', demoId);
+    }
     const demoUser = {
-      uid: 'demo-user',
-      displayName: 'Demo User',
+      uid: demoId,
+      displayName: 'Guest Explorer',
       email: 'demo@wastewise.local',
       photoURL: null,
       isDemo: true
@@ -96,31 +102,41 @@ function LoginScreen({ onLogin }) {
   };
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center px-8"
-      style={{ background: 'linear-gradient(135deg, #1a3a1a 0%, #2d6a4f 100%)', borderRadius: 'inherit' }}>
-      <div className="text-6xl mb-4">🌱</div>
-      <h1 className="text-3xl font-black text-white mb-2">WasteWise</h1>
-      <p className="text-white/70 text-sm text-center mb-6">
-        Local demo mode available — no Firebase login required.
-      </p>
-      <div className="w-full space-y-3">
+    <div className="absolute inset-0 flex flex-col items-center justify-between py-16 px-8 overflow-hidden"
+      style={{ background: 'linear-gradient(160deg, #132a13 0%, #2d6a4f 100%)', borderRadius: 'inherit' }}>
+      <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-green-400/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="flex flex-col items-center mt-8 z-10">
+        <div className="w-24 h-24 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl flex items-center justify-center text-5xl shadow-2xl mb-6">🌱</div>
+        <h1 className="text-4xl font-black text-white tracking-tighter mb-2">WasteWise</h1>
+        <p className="text-green-100/60 text-sm font-medium tracking-wide uppercase">AI Waste Detection</p>
+      </div>
+
+      <div className="w-full z-10 space-y-4">
+        <div className="text-center mb-8">
+          <h2 className="text-white font-bold text-xl">Welcome to the Journey</h2>
+          <p className="text-white/50 text-xs mt-1">Join thousands making an impact today.</p>
+        </div>
+
         {firebaseEnabled ? (
           <button onClick={signInWithGoogle} disabled={loading}
-            className="bg-white text-[#151c22] rounded-[20px] w-full h-14 font-bold text-base flex items-center justify-center gap-3">
-            {loading ? '...' : '🔵 Continue with Google'}
+            className="group relative bg-white text-[#151c22] rounded-[24px] w-full h-16 font-bold text-base flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl">
+            <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="" />
+            {loading ? 'Connecting...' : 'Continue with Google'}
           </button>
         ) : (
-          <button disabled
-            className="bg-white/50 text-[#151c22]/50 cursor-not-allowed rounded-[20px] w-full h-14 font-bold text-xs flex items-center justify-center gap-3">
-            Google login unavailable in local demo
-          </button>
+          <div className="bg-white/5 border border-white/10 rounded-[24px] p-4 text-center">
+            <p className="text-white/60 text-xs">Google Login is disabled. Use Guest mode.</p>
+          </div>
         )}
+
         <button onClick={continueAsDemo} disabled={loading}
-          className="bg-transparent border-2 border-white/40 text-white rounded-[20px] w-full h-14 font-bold text-base flex items-center justify-center hover:bg-white/10 transition-colors">
-          Continue as Demo User
+          className="bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-[24px] w-full h-16 font-bold text-base flex items-center justify-center hover:bg-white/20 transition-all active:scale-95">
+          Start as Guest
         </button>
       </div>
-      {error && <p className="text-red-300 text-xs mt-4 text-center">{error}</p>}
+      {error && <p className="text-red-300 text-[10px] mt-4 text-center z-10">{error}</p>}
     </div>
   );
 }
@@ -236,7 +252,14 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
 
   return (
     <div className="pt-20 px-5 pb-[100px] space-y-4 max-w-md mx-auto">
-      <div className="flex justify-end mb-1 anim">
+      <div className="flex justify-between items-start mb-1 anim">
+        <button onClick={() => {
+          localStorage.removeItem('wastewise-demo-user');
+          if (fbAuth) fbAuth.signOut();
+          window.location.reload();
+        }} className="w-10 h-10 rounded-full bg-white border border-[#bfc9c1]/50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
+          <I n="logout" s={{ fontSize: '18px' }} />
+        </button>
         <div className="flex bg-white rounded-full border border-[#bfc9c1]/50 overflow-hidden text-xs font-semibold">
           {[['en', 'EN'], ['hi', 'हि'], ['kn', 'ಕ']].map(([k, l]) => (
             <button key={k} onClick={() => setLang(k)}
