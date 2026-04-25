@@ -26,6 +26,7 @@
 
 ## 📌 Table of Contents
 
+- [� Problem Statement](#-problem-statement)
 - [🔥 The Problem We Solved](#-the-problem-we-solved)
 - [💡 Our Solution](#-our-solution)
 - [🏗️ System Architecture](#️-system-architecture)
@@ -37,6 +38,26 @@
 - [📂 Project Structure](#-project-structure)
 - [🚀 Getting Started](#-getting-started)
 - [🌍 Impact & Smart City Vision](#-impact--smart-city-vision)
+
+---
+
+## 🚨 Problem Statement
+
+**Problem**
+
+Improper waste segregation leads to environmental pollution and inefficient recycling processes.
+
+**Challenge**
+
+Develop a system that:
+
+- Uses image input (camera/upload)
+- Classifies waste into categories (plastic, organic, metal, etc.)
+- Suggests appropriate disposal methods
+
+**Goal**
+
+Promote proper waste management and support smart city initiatives.
 
 ---
 
