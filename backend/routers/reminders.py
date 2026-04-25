@@ -10,7 +10,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, validator
 from datetime import datetime
 from services.firestore_service import save_reminder_schedule, create_journey, get_user_journey
-from services.twilio_service import send_reminder, send_custom_message
 import re
 
 router = APIRouter()

@@ -105,7 +105,6 @@ def create_journey(uid: str, phone: str, start_date: datetime, waste_type: str, 
     db = _get_db()
     journey_data = {
         "uid": uid,
-        "phone": phone,
         "start_date": start_date,
         "waste_type": waste_type,
         "items": items,
@@ -202,7 +201,6 @@ def save_reminder_schedule(uid: str, phone: str, journey_start: datetime, checkp
         )
         reminder_doc = {
             "uid": uid,
-            "phone": phone,
             "day": day,
             "fire_date": fire_date,
             "status": "pending",   # pending | sent | failed
