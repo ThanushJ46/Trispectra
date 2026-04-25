@@ -1,163 +1,422 @@
 {
-  "banana_peel": {
-    "item_name": "banana peel",
-    "waste_category": "wet_organic",
-    "disposal_path": "compost",
-    "reason": "Organic matter suitable for composting",
+  "laptop": {
+    "item_name": "laptop",
+    "waste_category": "e_waste",
+    "disposal_path": "sell",
+    "reason": "Laptop is electronic waste and can be sold whole, dismantled for reusable parts, or sent to a certified e-waste vendor.",
+    "is_hazardous": false
+  },
+  "laptops": {
+    "item_name": "laptop",
+    "waste_category": "e_waste",
+    "disposal_path": "sell",
+    "reason": "Laptop is electronic waste and can be sold whole, dismantled for reusable parts, or sent to a certified e-waste vendor.",
+    "is_hazardous": false
+  },
+  "book": {
+    "item_name": "book",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "donate",
+    "reason": "Books can be donated, reused, or recycled through paper collection channels.",
+    "is_hazardous": false
+  },
+  "books": {
+    "item_name": "book",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "donate",
+    "reason": "Books can be donated, reused, or recycled through paper collection channels.",
     "is_hazardous": false
   },
   "apple_core": {
     "item_name": "apple core",
     "waste_category": "wet_organic",
     "disposal_path": "compost",
-    "reason": "Biodegradable fruit waste ideal for composting",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "food_waste": {
-    "item_name": "food waste",
+  "apple_peel": {
+    "item_name": "apple peel",
     "waste_category": "wet_organic",
     "disposal_path": "compost",
-    "reason": "Kitchen leftovers break down naturally in compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "leaf": {
-    "item_name": "leaf",
+  "bone": {
+    "item_name": "bone",
     "waste_category": "wet_organic",
     "disposal_path": "compost",
-    "reason": "Garden leaf litter is compostable organic waste",
+    "reason": "Organic kitchen waste should be composted only in a managed composting setup; avoid open composting if it may attract pests.",
     "is_hazardous": false
   },
-  "paper": {
-    "item_name": "paper",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "sell",
-    "reason": "Dry paper can be recycled through scrap channels",
+  "bread": {
+    "item_name": "bread",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "cardboard": {
-    "item_name": "cardboard",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "sell",
-    "reason": "Cardboard is recyclable and accepted by scrap buyers",
+  "egg": {
+    "item_name": "egg",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic kitchen waste should be composted only in a managed composting setup; avoid open composting if it may attract pests.",
     "is_hazardous": false
   },
-  "plastic_bottle": {
-    "item_name": "plastic bottle",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "sell",
-    "reason": "PET plastic bottles are valuable recyclables",
+  "egg_shell": {
+    "item_name": "egg shell",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "glass_bottle": {
-    "item_name": "glass bottle",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "Glass should be routed to a recycling collection point",
+  "fish": {
+    "item_name": "fish",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic kitchen waste should be composted only in a managed composting setup; avoid open composting if it may attract pests.",
     "is_hazardous": false
   },
-  "metal_can": {
-    "item_name": "metal can",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "sell",
-    "reason": "Metal cans are recyclable and sold as scrap",
+  "meat": {
+    "item_name": "meat",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic kitchen waste should be composted only in a managed composting setup; avoid open composting if it may attract pests.",
     "is_hazardous": false
   },
-  "cloth": {
-    "item_name": "cloth",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "donate",
-    "reason": "Reusable cloth can be donated when still usable",
+  "noodle": {
+    "item_name": "noodle",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "shoe": {
-    "item_name": "shoe",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "donate",
-    "reason": "Usable footwear can be donated instead of discarded",
+  "orange": {
+    "item_name": "orange",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "mobile_phone": {
-    "item_name": "mobile phone",
-    "waste_category": "e_waste",
-    "disposal_path": "collection_point",
-    "reason": "Electronics require authorized e-waste collection",
+  "orange_peel": {
+    "item_name": "orange peel",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
-  "laptop": {
-    "item_name": "laptop",
-    "waste_category": "e_waste",
-    "disposal_path": "collection_point",
-    "reason": "Computer devices must go to certified e-waste channels",
+  "pasta": {
+    "item_name": "pasta",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "pear": {
+    "item_name": "pear",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "rice": {
+    "item_name": "rice",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "tomato": {
+    "item_name": "tomato",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "vegetable": {
+    "item_name": "vegetable",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "apple": {
+    "item_name": "apple",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "beans": {
+    "item_name": "beans",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "beetroot": {
+    "item_name": "beetroot",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "bell_pepper": {
+    "item_name": "bell pepper",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "cabbage": {
+    "item_name": "cabbage",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "carrot": {
+    "item_name": "carrot",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "cucumber": {
+    "item_name": "cucumber",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "eggplant": {
+    "item_name": "eggplant",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "garlic": {
+    "item_name": "garlic",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "grape": {
+    "item_name": "grape",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "lemon": {
+    "item_name": "lemon",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "mango": {
+    "item_name": "mango",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "onion": {
+    "item_name": "onion",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "peach": {
+    "item_name": "peach",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "pepper": {
+    "item_name": "pepper",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "potato": {
+    "item_name": "potato",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "radish": {
+    "item_name": "radish",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
+    "is_hazardous": false
+  },
+  "zucchini": {
+    "item_name": "zucchini",
+    "waste_category": "wet_organic",
+    "disposal_path": "compost",
+    "reason": "Organic waste is suitable for composting through the guided composting journey.",
     "is_hazardous": false
   },
   "battery": {
     "item_name": "battery",
     "waste_category": "hazardous",
     "disposal_path": "special_facility",
-    "reason": "Chemical cells need hazardous waste treatment",
+    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
     "is_hazardous": true
   },
-  "wire": {
-    "item_name": "wire",
-    "waste_category": "e_waste",
-    "disposal_path": "collection_point",
-    "reason": "Electrical wiring should be processed as e-waste",
-    "is_hazardous": false
-  },
-  "charger": {
-    "item_name": "charger",
-    "waste_category": "e_waste",
-    "disposal_path": "collection_point",
-    "reason": "Chargers are electronic accessories requiring e-waste processing",
-    "is_hazardous": false
-  },
-  "bulb": {
-    "item_name": "bulb",
+  "chemical_plastic_bottle": {
+    "item_name": "chemical plastic bottle",
     "waste_category": "hazardous",
     "disposal_path": "special_facility",
-    "reason": "Bulbs may contain hazardous material and need special handling",
+    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
     "is_hazardous": true
   },
-  "medicine_strip": {
-    "item_name": "medicine strip",
-    "waste_category": "medical",
+  "chemical_plastic_gallon": {
+    "item_name": "chemical plastic gallon",
+    "waste_category": "hazardous",
     "disposal_path": "special_facility",
-    "reason": "Pharmaceutical waste must be handled by medical disposal systems",
+    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
     "is_hazardous": true
   },
-  "syringe": {
-    "item_name": "syringe",
-    "waste_category": "medical",
+  "chemical_spray_can": {
+    "item_name": "chemical spray can",
+    "waste_category": "hazardous",
     "disposal_path": "special_facility",
-    "reason": "Sharps are high-risk medical waste requiring special disposal",
+    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
     "is_hazardous": true
   },
-  "sanitary_pad": {
-    "item_name": "sanitary pad",
-    "waste_category": "sanitary",
+  "light_bulb": {
+    "item_name": "light bulb",
+    "waste_category": "hazardous",
     "disposal_path": "special_facility",
-    "reason": "Sanitary waste requires sealed handling and dedicated disposal",
+    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
     "is_hazardous": true
   },
-  "diaper": {
-    "item_name": "diaper",
-    "waste_category": "sanitary",
+  "paint_bucket": {
+    "item_name": "paint bucket",
+    "waste_category": "hazardous",
     "disposal_path": "special_facility",
-    "reason": "Used diapers are sanitary waste needing controlled disposal",
+    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
     "is_hazardous": true
   },
-  "brick": {
-    "item_name": "brick",
-    "waste_category": "construction",
+  "can": {
+    "item_name": "can",
+    "waste_category": "dry_recyclable",
     "disposal_path": "collection_point",
-    "reason": "Construction debris should go to approved collection points",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
     "is_hazardous": false
   },
-  "concrete_piece": {
-    "item_name": "concrete piece",
-    "waste_category": "construction",
+  "cardboard_bowl": {
+    "item_name": "cardboard bowl",
+    "waste_category": "dry_recyclable",
     "disposal_path": "collection_point",
-    "reason": "Concrete rubble belongs in construction waste streams",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "cardboard_box": {
+    "item_name": "cardboard box",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_bag": {
+    "item_name": "plastic bag",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_bottle": {
+    "item_name": "plastic bottle",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_bottle_cap": {
+    "item_name": "plastic bottle cap",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_box": {
+    "item_name": "plastic box",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_cutlery": {
+    "item_name": "plastic cutlery",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_cup": {
+    "item_name": "plastic cup",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_cup_lid": {
+    "item_name": "plastic cup lid",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "reuseable_paper": {
+    "item_name": "reuseable paper",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "scrap_paper": {
+    "item_name": "scrap paper",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "scrap_plastic": {
+    "item_name": "scrap plastic",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "snack_bag": {
+    "item_name": "snack bag",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "stick": {
+    "item_name": "stick",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
+    "is_hazardous": false
+  },
+  "straw": {
+    "item_name": "straw",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
     "is_hazardous": false
   }
 }
