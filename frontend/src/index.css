@@ -237,6 +237,14 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+@keyframes navPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.08); }
+}
+@keyframes navDotIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
 
 ::-webkit-scrollbar {
   display: none;
