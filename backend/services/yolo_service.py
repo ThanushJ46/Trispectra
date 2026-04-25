@@ -88,7 +88,16 @@ class YoloService:
         if getattr(self, "_initialized", False):
             return
 
-        self._project_root = Path(__file__).resolve().parents[2]
+        self._project_root = Path(__file__).resolve().parent.parent
+        # If we are in 'backend/services', project_root should be 'backend'
+        # If we are in root 'services', project_root should be '.'
+        if not (self._project_root / "config").exists():
+            # Try one level higher if config isn't found (local dev case)
+            if (self._project_root.parent / "backend" / "config").exists():
+                self._project_root = self._project_root.parent
+            elif (self._project_root.parent / "config").exists():
+                 self._project_root = self._project_root.parent
+
         self.debug = self._resolve_debug_mode()
         self.model_paths = self._resolve_candidate_model_paths()
         self.rules_path = self._resolve_rules_path()
