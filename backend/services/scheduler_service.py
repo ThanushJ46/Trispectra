@@ -8,7 +8,6 @@ due reminders, and fires Twilio WhatsApp messages.
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from services.firestore_service import get_due_reminders, mark_reminder_sent
-from services.twilio_service import send_reminder
 import logging
 
 logger = logging.getLogger("wastewise.scheduler")
@@ -30,15 +29,9 @@ def _process_due_reminders():
         item_name = reminder.get("item_name", "your waste")
         doc_path  = reminder.get("_doc_path")
 
-        result = send_reminder(phone=phone, day=day, item_name=item_name)
-
-        new_status = "sent" if result["success"] else "failed"
-        mark_reminder_sent(doc_path, status=new_status)
-
-        if result["success"]:
-            logger.info(f"✅ Reminder sent to {phone} for Day {day}. SID: {result['sid']}")
-        else:
-            logger.error(f"❌ Failed to send to {phone} Day {day}: {result['error']}")
+        # Automatically mark as sent since we do frontend notifications
+        mark_reminder_sent(doc_path, status="sent")
+        logger.info(f"✅ Reminder marked as sent for Day {day}.")
 
 
 def start_scheduler():

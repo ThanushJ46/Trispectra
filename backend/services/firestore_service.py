@@ -22,17 +22,26 @@ def _get_db():
     global _initialized
     if not _initialized:
         cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH", "serviceAccountKey.json")
-        cred = credentials.Certificate(cred_path)
-        firebase_admin.initialize_app(cred)
-        _initialized = True
-    return firestore.client()
-
+        try:
+            if not firebase_admin._apps:
+                cred = credentials.Certificate(cred_path)
+                firebase_admin.initialize_app(cred)
+            _initialized = True
+        except Exception as e:
+            print(f"WARNING: Firebase init failed: {e}. Running in demo mode.")
+            _initialized = True  # Don't retry on every call
+            return None
+    try:
+        return firestore.client()
+    except Exception:
+        return None
 
 # ── Analysis (written by Person 2, read here) ─────────────────────────────────
 
 def get_latest_analysis(uid: str) -> Optional[dict]:
     """Fetch the most recent waste analysis for a user."""
     db = _get_db()
+    if db is None: return None
     docs = (
         db.collection("analyses")
         .document(uid)
@@ -45,27 +54,26 @@ def get_latest_analysis(uid: str) -> Optional[dict]:
         return doc.to_dict()
     return None
 
-
-# ── Journey (composting checkpoints) ─────────────────────────────────────────
-
 def save_analysis(uid: str, analysis_data: dict) -> str:
     """
     Save a waste analysis result to Firestore.
     Returns the document ID.
     """
     db = _get_db()
+    if db is None: return "mock_id"
     ref = db.collection("analyses").document(uid).collection("items").document()
     analysis_data["created_at"] = datetime.utcnow()
     ref.set(analysis_data)
     return ref.id
 
+# ── Journey (composting checkpoints) ─────────────────────────────────────────
 
 def get_user_journey(uid: str) -> Optional[dict]:
     """Return the active composting journey for a user."""
     db = _get_db()
+    if db is None: return None
     doc = db.collection("journeys").document(uid).get()
     return doc.to_dict() if doc.exists else None
-
 
 def update_checkpoint(uid: str, day: int, status: str = "completed") -> dict:
     """
@@ -73,6 +81,10 @@ def update_checkpoint(uid: str, day: int, status: str = "completed") -> dict:
     Also awards points and updates leaderboard doc.
     """
     db = _get_db()
+    points_earned = 50 if status == "completed" else 0
+    if db is None:
+        return {"uid": uid, "day": day, "status": status, "points_earned": points_earned}
+
     journey_ref = db.collection("journeys").document(uid)
     journey = journey_ref.get().to_dict() or {}
 
@@ -84,11 +96,9 @@ def update_checkpoint(uid: str, day: int, status: str = "completed") -> dict:
     journey_ref.set({"checkpoints": checkpoints}, merge=True)
 
     # Award points
-    points_earned = 50 if status == "completed" else 0
     _add_points(uid, points_earned, f"checkpoint_day_{day}")
 
     return {"uid": uid, "day": day, "status": status, "points_earned": points_earned}
-
 
 def create_journey(uid: str, phone: str, start_date: datetime, waste_type: str, items: list) -> dict:
     """Create a new composting journey document."""
@@ -103,9 +113,9 @@ def create_journey(uid: str, phone: str, start_date: datetime, waste_type: str, 
         "status": "active",
         "created_at": datetime.utcnow(),
     }
+    if db is None: return journey_data
     db.collection("journeys").document(uid).set(journey_data)
     return journey_data
-
 
 # ── Leaderboard ───────────────────────────────────────────────────────────────
 
@@ -114,6 +124,7 @@ def _add_points(uid: str, points: int, reason: str):
     if points <= 0:
         return
     db = _get_db()
+    if db is None: return
     lb_ref = db.collection("leaderboard").document(uid)
     lb_doc = lb_ref.get()
 
@@ -134,15 +145,14 @@ def _add_points(uid: str, points: int, reason: str):
             "last_updated": datetime.utcnow(),
         })
 
-
 def _points_to_kg(points: int) -> float:
     """Rough conversion: 50 points ≈ 0.5 kg diverted."""
     return round(points * 0.01, 2)
 
-
 def get_leaderboard_top10() -> list:
     """Return top 10 users sorted by total_points."""
     db = _get_db()
+    if db is None: return []
     docs = (
         db.collection("leaderboard")
         .order_by("total_points", direction=firestore.Query.DESCENDING)
@@ -158,10 +168,10 @@ def get_leaderboard_top10() -> list:
         results.append(data)
     return results
 
-
 def get_user_stats(uid: str) -> Optional[dict]:
     """Return personal impact stats for a user."""
     db = _get_db()
+    if db is None: return None
     doc = db.collection("leaderboard").document(uid).get()
     if not doc.exists:
         return None
@@ -170,7 +180,6 @@ def get_user_stats(uid: str) -> Optional[dict]:
     data["trees_equivalent"] = round(kg * 0.05, 2)   # 1 tree ~ absorbs 20 kg CO2/yr
     data["bottles_rescued"] = int(kg / 0.025)          # avg PET bottle ~ 25g
     return data
-
 
 # ── Reminders ────────────────────────────────────────────────────────────────
 
@@ -181,6 +190,7 @@ def save_reminder_schedule(uid: str, phone: str, journey_start: datetime, checkp
     """
     db = _get_db()
     saved = []
+    if db is None: return saved
     for day in checkpoints:
         from datetime import timedelta
         fire_date = journey_start + timedelta(days=day)
@@ -202,13 +212,13 @@ def save_reminder_schedule(uid: str, phone: str, journey_start: datetime, checkp
         saved.append(reminder_doc)
     return saved
 
-
 def get_due_reminders() -> list:
     """
     Called by the scheduler every hour.
     Returns all pending reminders whose fire_date <= now.
     """
     db = _get_db()
+    if db is None: return []
     now = datetime.utcnow()
     results = []
 
@@ -226,11 +236,22 @@ def get_due_reminders() -> list:
 
     return results
 
-
 def mark_reminder_sent(doc_path: str, status: str = "sent"):
     """Update reminder status after attempting to send."""
     db = _get_db()
+    if db is None: return
     db.document(doc_path).update({
         "status": status,
         "sent_at": datetime.utcnow(),
+    })
+
+def save_feedback(uid: str, analysis_id: str, correct: bool, correction: str = None):
+    db = _get_db()
+    if db is None: return
+    db.collection("feedback").add({
+        "uid": uid,
+        "analysis_id": analysis_id,
+        "correct": correct,
+        "correction": correction,
+        "created_at": datetime.utcnow()
     })

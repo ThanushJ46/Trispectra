@@ -23,6 +23,8 @@ class CheckpointRequest(BaseModel):
     day: int
     status: str = "completed"   # completed | skipped
 
+class ProfileUpdate(BaseModel):
+    display_name: str
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
@@ -75,3 +77,15 @@ def complete_checkpoint(uid: str, body: CheckpointRequest):
         **result,
         "message": f"Day {body.day} marked as {body.status}. +{result['points_earned']} points!",
     }
+
+@router.post("/user/{uid}/profile")
+def update_profile(uid: str, body: ProfileUpdate):
+    """Called after login to store display name."""
+    from services.firestore_service import _get_db
+    db = _get_db()
+    if db:
+        db.collection("leaderboard").document(uid).set(
+            {"display_name": body.display_name, "uid": uid},
+            merge=True
+        )
+    return {"success": True}

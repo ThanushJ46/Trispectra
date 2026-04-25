@@ -22,23 +22,10 @@ CHECKPOINT_DAYS = [1, 3, 7, 21]  # composting journey milestones
 
 class ScheduleRequest(BaseModel):
     uid: str
-    phone: str                      # E.164, e.g. +919876543210
     journey_start_date: datetime    # ISO8601 string auto-parsed by Pydantic
     waste_type: str = "organic"
     items: list[str] = []           # e.g. ["banana peel", "vegetable scraps"]
     primary_item: str = "organic waste"
-
-    @validator("phone")
-    def validate_phone(cls, v):
-        if not re.match(r"^\+[1-9]\d{7,14}$", v):
-            raise ValueError("Phone must be E.164 format, e.g. +919876543210")
-        return v
-
-
-class TestMessageRequest(BaseModel):
-    phone: str
-    day: int = 1
-    item_name: str = "banana peels"
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -60,7 +47,7 @@ def schedule_reminders(body: ScheduleRequest):
     # Create journey doc
     create_journey(
         uid=body.uid,
-        phone=body.phone,
+        phone="",
         start_date=body.journey_start_date,
         waste_type=body.waste_type,
         items=body.items,
@@ -69,7 +56,7 @@ def schedule_reminders(body: ScheduleRequest):
     # Save reminder schedule to Firestore
     saved = save_reminder_schedule(
         uid=body.uid,
-        phone=body.phone,
+        phone="",
         journey_start=body.journey_start_date,
         checkpoints=CHECKPOINT_DAYS,
     )
@@ -103,26 +90,4 @@ def get_reminder_schedule(uid: str):
         "uid": uid,
         "journey": journey,
         "checkpoint_days": CHECKPOINT_DAYS,
-    }
-
-
-@router.post("/test")
-def test_whatsapp(body: TestMessageRequest):
-    """
-    Manually fire a test WhatsApp reminder.
-    Use this during demo / judging to prove Twilio works live.
-    """
-    result = send_reminder(
-        phone=body.phone,
-        day=body.day,
-        item_name=body.item_name,
-    )
-    if not result["success"]:
-        raise HTTPException(status_code=500, detail=f"Twilio error: {result['error']}")
-
-    return {
-        "success": True,
-        "message_sid": result["sid"],
-        "sent_to": body.phone,
-        "day": body.day,
     }

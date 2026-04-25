@@ -1,31 +1,16 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"><title>WasteWise</title>
-<meta name="theme-color" content="#2d6a4f">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="WasteWise">
-<meta name="mobile-web-app-capable" content="yes">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+import re
+
+with open('d:/code_space/Trispectra/frontend/index.html', 'r', encoding='utf-8') as f:
+    content = f.read()
+
+# 1. Update Head (Firebase SDK and CSS)
+firebase_sdk = """<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<style>
-*{font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent;box-sizing:border-box}
-.mi{font-family:'Material Symbols Outlined';font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased}
-.mi-fill{font-variation-settings:'FILL' 1}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse-soft{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes celebration{0%{transform:scale(0) rotate(0)}50%{transform:scale(1.2) rotate(180deg)}100%{transform:scale(1) rotate(360deg)}}
-@keyframes scanline{0%{top:10%}100%{top:90%}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.anim{animation:fadeInUp .4s ease both}
-.d1{animation-delay:50ms}.d2{animation-delay:100ms}.d3{animation-delay:150ms}.d4{animation-delay:200ms}.d5{animation-delay:250ms}.d6{animation-delay:300ms}
-.card{background:#fff;border-radius:24px;padding:24px;border:1px solid rgba(191,201,193,.3);box-shadow:0 4px 12px rgba(0,0,0,.03)}
-.card-s{background:#fff;border-radius:24px;padding:16px;border:1px solid rgba(191,201,193,.3);box-shadow:0 4px 12px rgba(0,0,0,.03)}
-/* Desktop: show as phone mockup */
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>"""
+content = content.replace('<script src="https://unpkg.com/react@18/umd/react.development.js"></script>', firebase_sdk)
+
+old_css = """.phone{position:relative;width:390px;height:844px;overflow:hidden;border-radius:44px;background:#f6f9ff;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);outline:1px solid rgba(0,0,0,.1)}"""
+new_css = """/* Desktop: show as phone mockup */
 .phone {
   position: relative;
   width: 390px;
@@ -55,14 +40,22 @@
   .min-h-screen {
     padding: 0 !important;
   }
-}
-::-webkit-scrollbar{display:none}
-</style></head><body>
-<div id="root"></div>
-<script type="text/babel">
-const {useState,useEffect,useRef}=React;
+}"""
+content = content.replace(old_css, new_css)
 
-// Firebase init (fill in real values)
+# 2. Update Firebase Config at top of script
+old_top = """const API_BASE = 'http://localhost:8000';
+function getUid() {
+  let uid = localStorage.getItem('wastewise_uid');
+  if (!uid) {
+    uid = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('wastewise_uid', uid);
+  }
+  return uid;
+}
+const UID = getUid();"""
+
+new_top = """// Firebase init (fill in real values)
 const FIREBASE_CONFIG = {
   apiKey: "REPLACE_ME",
   authDomain: "REPLACE_ME.firebaseapp.com",
@@ -75,38 +68,20 @@ const fbApp = firebase.initializeApp(FIREBASE_CONFIG);
 const fbAuth = firebase.auth();
 const API = 'http://localhost:8000';
 const API_BASE = API; // For backwards compatibility if any old code remains
+"""
+content = content.replace(old_top, new_top)
 
+# 3. Update BottomNav
+old_bottom_nav = "const items=[{id:'home',i:'home',l:'HOME'},{id:'scanner',i:'center_focus_strong',l:'SCAN'},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}];"
+new_bottom_nav = "const items=[{id:'home',i:'home',l:'HOME'},{id:'vendors',i:'store',l:'VENDORS'},{id:'scanner',i:'center_focus_strong',l:'SCAN'},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}];"
+content = content.replace(old_bottom_nav, new_bottom_nav)
 
-const T={en:{g:"Good morning, Alex.",t:"You're making a difference today.",r:"Ready to sort?",s:"Scan your next item.",d:"Daily Progress"},hi:{g:"सुप्रभात, एलेक्स।",t:"आज आप बदलाव ला रहे हैं।",r:"छांटने के लिए तैयार?",s:"अगला आइटम स्कैन करें।",d:"दैनिक प्रगति"},kn:{g:"ಶುಭೋದಯ, ಅಲೆಕ್ಸ್.",t:"ನೀವು ಇಂದು ಬದಲಾವಣೆ ಮಾಡುತ್ತಿದ್ದೀರಿ.",r:"ವಿಂಗಡಿಸಲು ಸಿದ್ಧರೆ?",s:"ನಿಮ್ಮ ಮುಂದಿನ ವಸ್ತುವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",d:"ದೈನಂದಿನ ಪ್ರಗತಿ"}};
-const botReply=(m)=>{const l=m.toLowerCase();if(l.includes('compost'))return"Great question! For effective composting, maintain a ratio of 3 parts brown material to 1 part green. Turn your pile every 3-7 days for faster decomposition. 🌱";if(l.includes('ewaste')||l.includes('e-waste'))return"For e-waste, I recommend checking your local municipal collection drive. Items like phones and laptops contain valuable metals that can be recovered. ♻️";if(l.includes('plastic'))return"Great initiative! For plastic reduction, start with single-use items. Carry a reusable bag and bottle. WasteWise can help you find recycling points nearby. 💪";return"That's a great question! Proper waste disposal can reduce landfill waste by up to 60%. Keep tracking your progress — every item counts! 🌍";};
-function I({n,f,c='',s={}}){return <span className={`mi ${f?'mi-fill':''} ${c}`} style={s}>{n}</span>}
-function TopBar({screen,onBack}){
-if(screen==='upload-preview')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white z-30 border-b border-[#bfc9c1]/40"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-semibold text-lg text-[#151c22]">Review Image</span><div className="w-10"/></div>);
-if(screen==='result')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-bold text-lg" style={{color:'#2D6A4F'}}>WasteWise</span><div className="w-10"/></div>);
-if(screen==='leaderboard')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="flex-1 text-center font-semibold text-lg" style={{color:'#2D6A4F'}}>Community Leaderboard</span><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div>);
-return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="font-black text-2xl tracking-tighter" style={{color:'#2D6A4F'}}>WasteWise</span></div><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div>);
-}
-function BottomNav({active,onNav}){
-const items=[{id:'home',i:'home',l:'HOME'},{id:'vendors',i:'store',l:'VENDORS'},{id:'scanner',i:'center_focus_strong',l:'SCAN'},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}];
-return(<div className="absolute bottom-0 left-0 right-0 h-20 bg-white rounded-t-[24px] border-t border-gray-200 flex items-center justify-around px-2 z-30" style={{boxShadow:'0 -2px 10px rgba(0,0,0,.05)'}}>{items.map(it=>(<button key={it.id} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5 relative pt-1 pb-1 px-1"><I n={it.i} f={active===it.id} s={{color:active===it.id?'#2D6A4F':'#9ca3af',fontSize:'24px'}}/><span className="text-[10px] uppercase tracking-wider font-medium" style={{color:active===it.id?'#2D6A4F':'#9ca3af'}}>{it.l}</span>{active===it.id&&<div className="absolute -bottom-0 w-1 h-1 rounded-full" style={{background:'#2D6A4F'}}/>}</button>))}</div>);
-}
-function ChatModal({open,onClose}){
-const [msgs,setMsgs]=useState([{f:'b',t:"Hi! I can help you with composting tips, waste disposal guidance, or anything about WasteWise. What would you like to know?"}]);
-const [inp,setInp]=useState('');const ref=useRef(null);
-useEffect(()=>{if(ref.current)ref.current.scrollTop=ref.current.scrollHeight},[msgs]);
-const send=(x)=>{const txt=x||inp;if(!txt.trim())return;setMsgs(p=>[...p,{f:'u',t:txt}]);setInp('');setTimeout(()=>setMsgs(p=>[...p,{f:'b',t:botReply(txt)}]),800);};
-if(!open)return null;
-return(<div className="absolute inset-0 z-50 flex items-end" onClick={onClose}><div className="absolute inset-0 bg-black/40"/>
-<div className="relative bg-white rounded-t-[32px] p-6 w-full flex flex-col" style={{maxHeight:'70%'}} onClick={e=>e.stopPropagation()}>
-<div className="flex items-center justify-between mb-4"><h2 className="font-bold text-xl">Ask WasteWise 🤖</h2><button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"><I n="close"/></button></div>
-<div ref={ref} className="flex-1 overflow-y-auto space-y-3 mb-4" style={{minHeight:200}}>
-{msgs.map((m,i)=>(<div key={i} className={`max-w-[85%] p-3 text-sm ${m.f==='b'?'bg-[#e8f5e9] rounded-[16px] rounded-tl-sm text-[#151c22]':'bg-[#2d6a4f] text-white rounded-[16px] rounded-tr-sm ml-auto'}`}>{m.t}</div>))}
-</div>
-<div className="flex gap-2 mb-3 overflow-x-auto pb-1">{["Composting tips","E-waste near me","Reduce plastic"].map(c=>(<button key={c} onClick={()=>send(c)} className="whitespace-nowrap bg-[#e8eef7] text-[#404943] text-xs px-3 py-2 rounded-full border border-[#bfc9c1]/50">{c}</button>))}</div>
-<div className="flex gap-2"><input value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==='Enter'&&send()} placeholder="Type a message..." className="flex-1 bg-[#f6f9ff] rounded-[20px] border border-[#bfc9c1] px-4 py-3 text-sm outline-none"/><button onClick={()=>send()} className="bg-[#2d6a4f] text-white rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0"><I n="send" s={{fontSize:'18px'}}/></button></div>
-</div></div>);
-}
-function LoginScreen({ onLogin }) {
+# Fix TopBar padding for 5 items? The items justify-around will handle it.
+
+# Now we need to extract and replace the rest of the components.
+# Let's define the new components from the prompt.
+
+login_screen = """function LoginScreen({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -137,8 +112,9 @@ function LoginScreen({ onLogin }) {
       {error && <p className="text-red-300 text-xs mt-4 text-center">{error}</p>}
     </div>
   );
-}
-function VendorsScreen() {
+}"""
+
+vendors_screen = """function VendorsScreen() {
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -203,8 +179,9 @@ function VendorsScreen() {
       </div>
     </div>
   );
-}
-function HomeScreen({ onNav, lang, setLang, user, userStats }) {
+}"""
+
+home_screen = """function HomeScreen({ onNav, lang, setLang, user, userStats }) {
   const t = T[lang] || T.en;
   const displayName = user?.displayName?.split(' ')[0] || 'Friend';
   const hour = new Date().getHours();
@@ -287,37 +264,9 @@ function HomeScreen({ onNav, lang, setLang, user, userStats }) {
       </div>
     </div>
   );
-}
-function ScannerScreen({onNav,onChat,fileRef}){
-return(<div className="absolute inset-0 z-10" style={{background:'linear-gradient(135deg,#1a2e1e 0%,#2d4a2d 40%,#1e3a2e 100%)'}}>
-<div className="absolute inset-0" style={{backgroundImage:"url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E\")"}}/>
-<div className="absolute flex items-center justify-center" style={{top:60,left:0,right:0,bottom:320}}><div className="relative" style={{width:220,height:220}}>
-<div className="absolute inset-0 border-2 border-dashed border-white/30 rounded-[32px]"/>
-<div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white rounded-tl-lg"/>
-<div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white rounded-tr-lg"/>
-<div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white rounded-bl-lg"/>
-<div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white rounded-br-lg"/>
-<div className="absolute left-0 right-0 h-[1px] bg-[#4ade80]/60" style={{animation:'scanline 2s ease-in-out infinite alternate',top:'50%'}}/>
-</div></div>
-<p className="absolute left-0 right-0 text-center text-white text-sm font-medium drop-shadow-lg" style={{bottom:298}}>Align waste inside the box</p>
-<div className="absolute left-0 right-0 flex justify-center" style={{bottom:248}}>
-<div className="bg-white/95 backdrop-blur rounded-full px-5 py-2.5 shadow-lg flex items-center gap-2"><I n="recycling" c="pulse-icon" s={{color:'#2D6A4F',fontSize:'18px',animation:'pulse-soft 1.5s ease-in-out infinite'}}/><span className="text-[#2D6A4F] font-bold text-sm">Detected: Plastic Bottle</span></div></div>
-<div className="absolute left-0 right-0 px-6" style={{bottom:190}}>
-<p className="text-white/50 text-xs text-center mb-2">── or ──</p>
-<button onClick={()=>fileRef.current&&fileRef.current.click()} className="bg-white/15 backdrop-blur border border-white/25 text-white rounded-[20px] px-5 py-2.5 w-full flex items-center justify-center gap-2 text-sm font-medium hover:bg-white/25 transition-colors"><I n="photo_library" s={{fontSize:'18px'}}/>Upload from Gallery</button>
-</div>
-<div className="absolute left-0 right-0 px-6 flex justify-between items-center" style={{bottom:100}}>
-<div className="w-14"/>
-<button onClick={()=>onNav('result')} className="w-[72px] h-[72px] rounded-full flex items-center justify-center border-4 border-white/30" style={{background:'#2D6A4F'}}><I n="center_focus_strong" c="text-white" s={{fontSize:'32px'}}/></button>
-<button onClick={onChat} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"><I n="forum" s={{color:'#2D6A4F',fontSize:'20px'}}/></button>
-</div>
-<div className="absolute bottom-0 left-0 right-0 h-20 bg-black/20 rounded-t-[24px] flex items-center justify-around px-2">
-{[{id:'home',i:'home',l:'HOME'},{id:'scanner',i:'center_focus_strong',l:'SCAN',a:true},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}].map(it=>(<button key={it.l} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5"><I n={it.i} f={!!it.a} s={{color:it.a?'#fff':'rgba(255,255,255,.5)',fontSize:'22px'}}/><span className="text-[10px] uppercase tracking-wider font-medium" style={{color:it.a?'#fff':'rgba(255,255,255,.5)'}}>{it.l}</span></button>))}
-</div>
-</div>);
-}
+}"""
 
-function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
+upload_screen = """function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -390,8 +339,9 @@ function UploadPreviewScreen({ onNav, imgUrl, fileRef, user, onResult }) {
       }
     </div>
   );
-}
-function ResultScreen({ onNav, onChat, result, user }) {
+}"""
+
+result_screen = """function ResultScreen({ onNav, onChat, result, user }) {
   const [feedbackSent, setFeedbackSent] = useState(false);
   
   if (!result || !result.items || result.items.length === 0) {
@@ -525,8 +475,9 @@ function ResultScreen({ onNav, onChat, result, user }) {
       </div>
     </div>
   );
-}
-function LeaderboardScreen({ user, userStats }) {
+}"""
+
+leaderboard_screen = """function LeaderboardScreen({ user, userStats }) {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalRanked, setTotalRanked] = useState(0);
@@ -614,8 +565,9 @@ function LeaderboardScreen({ user, userStats }) {
       </div>
     </div>
   );
-}
-function JourneyScreen({ user, onNav }) {
+}"""
+
+journey_screen = """function JourneyScreen({ user, onNav }) {
   const [journey, setJourney] = useState(null);
   const [loading, setLoading] = useState(true);
   const [celeb, setCeleb] = useState(false);
@@ -666,7 +618,10 @@ function JourneyScreen({ user, onNav }) {
   };
 
   const startJourney = async () => {
-    if (!user) return;
+    if (!phone.match(/^\+[1-9]\d{7,14}$/) || !user) {
+      alert('Enter a valid phone number in format +91XXXXXXXXXX');
+      return;
+    }
     setStartingJourney(true);
     try {
       const r = await fetch(`${API}/api/reminder/schedule`, {
@@ -674,6 +629,7 @@ function JourneyScreen({ user, onNav }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           uid: user.uid,
+          phone,
           journey_start_date: new Date().toISOString(),
           waste_type: 'organic',
           items: [],
@@ -696,10 +652,13 @@ function JourneyScreen({ user, onNav }) {
         {showStartJourney ? (
           <div className="card mt-6">
             <h3 className="font-semibold text-lg mb-3">Start Your Journey</h3>
-            <p className="text-sm text-[#404943] mb-3">You will receive notifications here on the app for each checkpoint.</p>
+            <p className="text-sm text-[#404943] mb-3">Enter your WhatsApp number to get checkpoint reminders:</p>
+            <input value={phone} onChange={e=>setPhone(e.target.value)}
+              placeholder="+919876543210"
+              className="w-full border border-[#bfc9c1] rounded-[16px] px-4 py-3 text-sm outline-none mb-4"/>
             <button onClick={startJourney} disabled={startingJourney}
               className="bg-[#2d6a4f] text-white w-full h-12 rounded-[20px] font-semibold disabled:opacity-50">
-              {startingJourney ? 'Starting...' : 'Begin Journey 🌱'}
+              {startingJourney ? 'Starting...' : 'Begin Journey + Enable WhatsApp Reminders 🌱'}
             </button>
           </div>
         ) : (
@@ -790,9 +749,9 @@ function JourneyScreen({ user, onNav }) {
       )}
     </div>
   );
-}
-function showPushNotif(title, options) { if ('serviceWorker' in navigator) { navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, options).catch(e => console.error('SW notif error:', e)); }); } else { try { new Notification(title, options); } catch(e) { console.error('Notif error:', e); } } }
-function App() {
+}"""
+
+app_screen = """function App() {
   const [scr, setScr] = useState('home');
   const [chat, setChat] = useState(false);
   const [lang, setLang] = useState('en');
@@ -846,7 +805,7 @@ function App() {
     return () => clearTimeout(t);
   }, [user]);
 
-  const handleAllowNotif=()=>{Notification.requestPermission().then(permission=>{setShowNotifModal(false);if(permission==='granted'){localStorage.setItem('notif-granted','true');showPushNotif('Welcome to WasteWise! 🌍',{body:'You\'re set up to make a real difference. Let\'s sort some waste today! ♻️'});}});};
+  const handleAllowNotif=()=>{Notification.requestPermission().then(permission=>{setShowNotifModal(false);if(permission==='granted'){localStorage.setItem('notif-granted','true');showPushNotif('Welcome to WasteWise! 🌍',{body:'You\\'re set up to make a real difference. Let\\'s sort some waste today! ♻️'});}});};
   const handleDismissNotif=()=>{localStorage.setItem('notif-dismissed','true');setShowNotifModal(false);};
   const nav=(id, data)=>{if(id==='chat'){setChat(true);return;}if(id==='map'||id==='profile')return;if(data)setAnalysisResult(data);setScr(id);};
   const handleFile=(e)=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=(ev)=>{setImgUrl(ev.target.result);setScr('upload-preview');};r.readAsDataURL(f);e.target.value='';};
@@ -907,58 +866,30 @@ function App() {
       </div>
     </div>
   );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+}"""
 
-// ===== PWA SERVICE WORKER =====
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('WasteWise PWA ready ✅', reg.scope))
-      .catch(err => console.error('SW registration failed:', err));
-  });
-}
+import re
 
-// ===== INSTALL BANNER =====
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  if (localStorage.getItem('pwa-dismissed')) return;
-  const banner = document.createElement('div');
-  banner.id = 'install-banner';
-  banner.style.cssText = `
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
-    background: #2d6a4f; color: white; padding: 16px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    border-radius: 24px 24px 0 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-    font-family: Inter, sans-serif; animation: fadeInUp 0.3s ease;
-  `;
-  banner.innerHTML = `
-    <div style="display:flex; align-items:center; gap:12px;">
-      <span style="font-size:28px;">🌱</span>
-      <div>
-        <div style="font-weight:700; font-size:15px;">Install WasteWise</div>
-        <div style="font-size:12px; opacity:0.8;">Works offline · Get checkpoint reminders</div>
-      </div>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center;">
-      <button id="install-btn" style="
-        background:white; color:#2d6a4f; border:none; border-radius:999px;
-        padding:8px 18px; font-weight:700; font-size:13px; cursor:pointer;
-      ">Install</button>
-      <button id="dismiss-btn" style="
-        background:transparent; color:rgba(255,255,255,0.7); border:none;
-        font-size:13px; cursor:pointer; padding:8px;
-      ">✕</button>
-    </div>
-  `;
-  document.body.appendChild(banner);
-  document.getElementById('install-btn').onclick = () => {
-    e.prompt();
-    e.userChoice.then(() => banner.remove());
-  };
-  document.getElementById('dismiss-btn').onclick = () => {
-    localStorage.setItem('pwa-dismissed', '1');
-    banner.remove();
-  };
-});
-</script></body></html>
+# We will just replace everything from "function HomeScreen" up to "ReactDOM.createRoot"
+start_match = re.search(r"function HomeScreen.*?\{", content)
+end_match = re.search(r"ReactDOM\.createRoot", content)
+
+if start_match and end_match:
+    start_idx = start_match.start()
+    end_idx = end_match.start()
+    
+    # But wait, we need to preserve ScannerScreen!
+    scanner_match = re.search(r"function ScannerScreen[\s\S]*?\}\nfunction UploadPreviewScreen", content)
+    scanner_screen = scanner_match.group(0).replace("function UploadPreviewScreen", "")
+
+    new_components = "\n".join([
+        login_screen, vendors_screen, home_screen, scanner_screen, upload_screen, result_screen, leaderboard_screen, journey_screen,
+        "function showPushNotif(title, options) { if ('serviceWorker' in navigator) { navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, options).catch(e => console.error('SW notif error:', e)); }); } else { try { new Notification(title, options); } catch(e) { console.error('Notif error:', e); } } }",
+        app_screen
+    ]) + "\n"
+    
+    content = content[:start_idx] + new_components + content[end_idx:]
+
+with open('d:/code_space/Trispectra/frontend/index.html', 'w', encoding='utf-8') as f:
+    f.write(content)
+print("Updated frontend")
