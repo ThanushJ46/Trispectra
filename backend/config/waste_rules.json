@@ -1,16 +1,44 @@
 {
-  "laptop": {
-    "item_name": "laptop",
-    "waste_category": "e_waste",
-    "disposal_path": "sell",
-    "reason": "Laptop is electronic waste and can be sold whole, dismantled for reusable parts, or sent to a certified e-waste vendor.",
+  "garbage_bag": {
+    "item_name": "garbage bag",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "Garbage bags should be sent to a dry waste collection point after separating any wet or hazardous contents.",
     "is_hazardous": false
   },
-  "laptops": {
-    "item_name": "laptop",
-    "waste_category": "e_waste",
-    "disposal_path": "sell",
-    "reason": "Laptop is electronic waste and can be sold whole, dismantled for reusable parts, or sent to a certified e-waste vendor.",
+  "glass": {
+    "item_name": "glass",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "Glass waste should be cleaned if needed and sent to a recycling or dry waste collection point.",
+    "is_hazardous": false
+  },
+  "paper_bag": {
+    "item_name": "paper bag",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "Paper bags can be reused or sent to a dry paper recycling collection point.",
+    "is_hazardous": false
+  },
+  "pet_bottle": {
+    "item_name": "PET bottle",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "PET bottles should be emptied, cleaned if needed, and sent to a plastic recycling collection point.",
+    "is_hazardous": false
+  },
+  "plastic_bag": {
+    "item_name": "plastic bag",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "Plastic bags should be sent to a dry waste or plastic recycling collection point.",
+    "is_hazardous": false
+  },
+  "can": {
+    "item_name": "can",
+    "waste_category": "dry_recyclable",
+    "disposal_path": "collection_point",
+    "reason": "Cans should be cleaned if needed and sent to a metal recycling or dry waste collection point.",
     "is_hazardous": false
   },
   "book": {
@@ -20,11 +48,11 @@
     "reason": "Books can be donated, reused, or recycled through paper collection channels.",
     "is_hazardous": false
   },
-  "books": {
-    "item_name": "book",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "donate",
-    "reason": "Books can be donated, reused, or recycled through paper collection channels.",
+  "laptop": {
+    "item_name": "laptop",
+    "waste_category": "e_waste",
+    "disposal_path": "sell",
+    "reason": "Laptop is electronic waste and can be sold whole, dismantled for reusable parts, or sent to a certified e-waste vendor.",
     "is_hazardous": false
   },
   "apple_core": {
@@ -263,160 +291,6 @@
     "waste_category": "wet_organic",
     "disposal_path": "compost",
     "reason": "Organic waste is suitable for composting through the guided composting journey.",
-    "is_hazardous": false
-  },
-  "battery": {
-    "item_name": "battery",
-    "waste_category": "hazardous",
-    "disposal_path": "special_facility",
-    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
-    "is_hazardous": true
-  },
-  "chemical_plastic_bottle": {
-    "item_name": "chemical plastic bottle",
-    "waste_category": "hazardous",
-    "disposal_path": "special_facility",
-    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
-    "is_hazardous": true
-  },
-  "chemical_plastic_gallon": {
-    "item_name": "chemical plastic gallon",
-    "waste_category": "hazardous",
-    "disposal_path": "special_facility",
-    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
-    "is_hazardous": true
-  },
-  "chemical_spray_can": {
-    "item_name": "chemical spray can",
-    "waste_category": "hazardous",
-    "disposal_path": "special_facility",
-    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
-    "is_hazardous": true
-  },
-  "light_bulb": {
-    "item_name": "light bulb",
-    "waste_category": "hazardous",
-    "disposal_path": "special_facility",
-    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
-    "is_hazardous": true
-  },
-  "paint_bucket": {
-    "item_name": "paint bucket",
-    "waste_category": "hazardous",
-    "disposal_path": "special_facility",
-    "reason": "This item requires special handling and should be sent to an authorized hazardous waste or special facility.",
-    "is_hazardous": true
-  },
-  "can": {
-    "item_name": "can",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "cardboard_bowl": {
-    "item_name": "cardboard bowl",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "cardboard_box": {
-    "item_name": "cardboard box",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_bag": {
-    "item_name": "plastic bag",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_bottle": {
-    "item_name": "plastic bottle",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_bottle_cap": {
-    "item_name": "plastic bottle cap",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_box": {
-    "item_name": "plastic box",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_cutlery": {
-    "item_name": "plastic cutlery",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_cup": {
-    "item_name": "plastic cup",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "plastic_cup_lid": {
-    "item_name": "plastic cup lid",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "reuseable_paper": {
-    "item_name": "reuseable paper",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "scrap_paper": {
-    "item_name": "scrap paper",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "scrap_plastic": {
-    "item_name": "scrap plastic",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "snack_bag": {
-    "item_name": "snack bag",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "stick": {
-    "item_name": "stick",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
-    "is_hazardous": false
-  },
-  "straw": {
-    "item_name": "straw",
-    "waste_category": "dry_recyclable",
-    "disposal_path": "collection_point",
-    "reason": "This item should be cleaned if needed and sent to a dry waste or recycling collection point.",
     "is_hazardous": false
   }
 }
