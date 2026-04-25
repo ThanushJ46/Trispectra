@@ -23,15 +23,27 @@ def _get_db():
     global _initialized, _db_available
     if not _initialized:
         _initialized = True
+        
+        # Hugging Face Spaces: Check if credentials are in a Secret (Environment Variable)
+        cred_json_str = os.getenv("FIREBASE_CREDENTIALS_JSON")
         cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH", "serviceAccountKey.json")
+        
         try:
             if not firebase_admin._apps:
-                if os.path.exists(cred_path):
+                import json
+                if cred_json_str:
+                    # Parse the secret string into a dictionary
+                    cred_dict = json.loads(cred_json_str)
+                    cred = credentials.Certificate(cred_dict)
+                    firebase_admin.initialize_app(cred)
+                    _db_available = True
+                elif os.path.exists(cred_path):
+                    # Fallback to local file
                     cred = credentials.Certificate(cred_path)
                     firebase_admin.initialize_app(cred)
                     _db_available = True
                 else:
-                    print(f"WARNING: {cred_path} not found. Running in demo mode (no Firestore).")
+                    print(f"WARNING: No Firebase credentials found. Running in demo mode (no Firestore).")
                     _db_available = False
             else:
                 _db_available = True
