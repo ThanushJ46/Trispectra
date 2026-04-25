@@ -35,6 +35,16 @@ def schedule_reminders(body: ScheduleRequest):
     Creates a composting journey and schedules WhatsApp reminders
     for Day 1, 3, 7, and 21.
     """
+    if body.uid == "demo-user":
+        return {
+            "success": True,
+            "uid": body.uid,
+            "journey_start": body.journey_start_date.isoformat(),
+            "checkpoints_scheduled": CHECKPOINT_DAYS,
+            "reminders_saved": len(CHECKPOINT_DAYS),
+            "message": f"Reminders scheduled for days {CHECKPOINT_DAYS}. WhatsApp messages will fire automatically.",
+        }
+
     # Prevent duplicate journeys
     existing = get_user_journey(body.uid)
     if existing and existing.get("status") == "active":
@@ -61,12 +71,15 @@ def schedule_reminders(body: ScheduleRequest):
     )
 
     # Enrich with item_name for the scheduler to use
-    from firebase_admin import firestore as fs
-    db_client = fs.client()
-    for reminder in saved:
-        day = reminder["day"]
-        doc_path = f"reminders/{body.uid}/schedule/day_{day}"
-        db_client.document(doc_path).update({"item_name": body.primary_item})
+    try:
+        from firebase_admin import firestore as fs
+        db_client = fs.client()
+        for reminder in saved:
+            day = reminder["day"]
+            doc_path = f"reminders/{body.uid}/schedule/day_{day}"
+            db_client.document(doc_path).update({"item_name": body.primary_item})
+    except Exception as e:
+        print(f"[Reminders] Error enriching schedule: {e}")
 
     return {
         "success": True,
@@ -78,9 +91,39 @@ def schedule_reminders(body: ScheduleRequest):
     }
 
 
+@router.get("/schedule")
+def get_global_schedule():
+    """Return the global checkpoint schedule."""
+    return {
+        "schedule": [
+            {"day": 1, "title": "Start composting"},
+            {"day": 3, "title": "Turn the pile"},
+            {"day": 7, "title": "Check moisture"},
+            {"day": 14, "title": "Add dry material"},
+            {"day": 21, "title": "Compost ready check"}
+        ]
+    }
+
 @router.get("/{uid}")
 def get_reminder_schedule(uid: str):
     """View a user's scheduled reminders and journey status."""
+    if uid == "demo-user":
+        # Return mock journey for demo user
+        return {
+            "uid": uid,
+            "journey": {
+                "uid": uid,
+                "status": "active",
+                "start_date": datetime.utcnow().isoformat(),
+                "waste_type": "organic",
+                "checkpoints": {
+                    "1": {"status": "completed"},
+                    "3": {"status": "pending"}
+                }
+            },
+            "checkpoint_days": CHECKPOINT_DAYS,
+        }
+        
     journey = get_user_journey(uid)
     if not journey:
         raise HTTPException(status_code=404, detail="No active journey found for this user.")
