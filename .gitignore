@@ -25,3 +25,10 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+
+serviceAccountKey.json
+
+
+*.bak
+
