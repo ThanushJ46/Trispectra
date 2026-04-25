@@ -12,15 +12,44 @@ import StoreScreen from './components/StoreScreen.jsx';
 const T={en:{g:"Good morning, Alex.",t:"You're making a difference today.",r:"Ready to sort?",s:"Scan your next item.",d:"Daily Progress"},hi:{g:"सुप्रभात, एलेक्स।",t:"आज आप बदलाव ला रहे हैं।",r:"छांटने के लिए तैयार?",s:"अगला आइटम स्कैन करें।",d:"दैनिक प्रगति"},kn:{g:"ಶುಭೋದಯ, ಅಲೆಕ್ಸ್.",t:"ನೀವು ಇಂದು ಬದಲಾವಣೆ ಮಾಡುತ್ತಿದ್ದೀರಿ.",r:"ವಿಂಗಡಿಸಲು ಸಿದ್ಧರೆ?",s:"ನಿಮ್ಮ ಮುಂದಿನ ವಸ್ತುವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.",d:"ದೈನಂದಿನ ಪ್ರಗತಿ"}};
 const botReply=(m)=>{const l=m.toLowerCase();if(l.includes('compost'))return"Great question! For effective composting, maintain a ratio of 3 parts brown material to 1 part green. Turn your pile every 3-7 days for faster decomposition. 🌱";if(l.includes('ewaste')||l.includes('e-waste'))return"For e-waste, I recommend checking your local municipal collection drive. Items like phones and laptops contain valuable metals that can be recovered. ♻️";if(l.includes('plastic'))return"Great initiative! For plastic reduction, start with single-use items. Carry a reusable bag and bottle. WasteWise can help you find recycling points nearby. 💪";return"That's a great question! Proper waste disposal can reduce landfill waste by up to 60%. Keep tracking your progress — every item counts! 🌍";};
 function I({n,f,c='',s={}}){return <span className={`mi ${f?'mi-fill':''} ${c}`} style={s}>{n}</span>}
-function TopBar({screen,onBack}){
+function TopBar({screen,onBack,onNav}){
 if(screen==='upload-preview')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white z-30 border-b border-[#bfc9c1]/40"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-semibold text-lg text-[#151c22]">Review Image</span><div className="w-10"/></div>);
 if(screen==='result')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-bold text-lg" style={{color:'#2D6A4F'}}>WasteWise</span><div className="w-10"/></div>);
+if(screen==='store')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><button onClick={onBack} className="w-10 h-10 flex items-center justify-center"><I n="arrow_back"/></button><span className="flex-1 text-center font-bold text-lg" style={{color:'#2D6A4F'}}>Rewards Store</span><div className="w-10"/></div>);
 if(screen==='leaderboard')return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="flex-1 text-center font-semibold text-lg" style={{color:'#2D6A4F'}}>Community Leaderboard</span><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div>);
-return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="font-black text-2xl tracking-tighter" style={{color:'#2D6A4F'}}>WasteWise</span></div><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div>);
+return(<div className="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-5 bg-white/80 backdrop-blur-md z-30 border-b border-gray-100"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center text-white text-xs font-bold">A</div><span className="font-black text-2xl tracking-tighter" style={{color:'#2D6A4F'}}>WasteWise</span></div><div className="flex items-center gap-1"><button onClick={()=>onNav&&onNav('store')} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"><I n="local_mall" s={{color:'#404943',fontSize:'22px'}}/></button><button className="w-10 h-10 flex items-center justify-center"><I n="notifications" c="text-gray-500"/></button></div></div>);
 }
 function BottomNav({active,onNav}){
-const items=[{id:'home',i:'home',l:'HOME'},{id:'vendors',i:'store',l:'VENDORS'},{id:'scanner',i:'center_focus_strong',l:'SCAN'},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}];
-return(<div className="absolute bottom-0 left-0 right-0 h-20 bg-white rounded-t-[24px] border-t border-gray-200 flex items-center justify-around px-2 z-30" style={{boxShadow:'0 -2px 10px rgba(0,0,0,.05)'}}>{items.map(it=>(<button key={it.id} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5 relative pt-1 pb-1 px-1"><I n={it.i} f={active===it.id} s={{color:active===it.id?'#2D6A4F':'#9ca3af',fontSize:'24px'}}/><span className="text-[10px] uppercase tracking-wider font-medium" style={{color:active===it.id?'#2D6A4F':'#9ca3af'}}>{it.l}</span>{active===it.id&&<div className="absolute -bottom-0 w-1 h-1 rounded-full" style={{background:'#2D6A4F'}}/>}</button>))}</div>);
+const items=[{id:'home',i:'home',l:'Home'},{id:'vendors',i:'store',l:'Vendors'},{id:'scanner',i:'center_focus_strong',l:'Scan'},{id:'journey',i:'bar_chart',l:'Impact'},{id:'leaderboard',i:'leaderboard',l:'Board'}];
+return(
+<div className="absolute bottom-0 left-0 right-0 z-30" style={{padding:'0 8px 10px'}}>
+<div style={{background:'rgba(255,255,255,0.72)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:26,border:'1px solid rgba(191,201,193,0.35)',boxShadow:'0 8px 32px rgba(0,0,0,0.08)'}} className="flex items-center justify-around py-2 px-1">
+{items.map(it=>{
+const isActive=active===it.id;
+const isScan=it.id==='scanner';
+return(
+<button key={it.id} onClick={()=>onNav(it.id)} className="flex flex-col items-center relative" style={{flex:1,minWidth:0,transition:'all .3s cubic-bezier(.34,1.56,.64,1)',transform:isActive?'scale(1.08)':'scale(1)'}}>
+{isScan?(
+<div style={{width:52,height:52,borderRadius:16,background:isActive?'linear-gradient(135deg,#2d6a4f,#40916c)':'rgba(45,106,79,0.1)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:isActive?'0 4px 16px rgba(45,106,79,0.35)':'none',transition:'all .3s ease',transform:isActive?'translateY(-8px)':'translateY(0)'}}>
+{isActive&&<div style={{position:'absolute',inset:-4,borderRadius:20,border:'2px solid rgba(45,106,79,0.25)',animation:'navPulse 2s ease-in-out infinite'}}/>}
+<I n={it.i} f={isActive} s={{color:isActive?'#fff':'#2d6a4f',fontSize:'26px'}}/>
+</div>
+):(
+<>
+{isActive&&<div style={{position:'absolute',top:0,left:'50%',transform:'translateX(-50%)',width:44,height:36,borderRadius:12,background:'rgba(45,106,79,0.1)',animation:'navPillIn .3s ease'}}/>}
+<div style={{position:'relative',zIndex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'6px 0'}}>
+<I n={it.i} f={isActive} s={{color:isActive?'#2d6a4f':'#9ca3af',fontSize:'22px',transition:'color .3s ease'}}/>
+<span style={{fontSize:10,fontWeight:isActive?700:500,color:isActive?'#2d6a4f':'#9ca3af',transition:'all .3s ease',letterSpacing:'0.02em'}}>{it.l}</span>
+</div>
+{isActive&&<div style={{position:'absolute',bottom:0,left:'50%',transform:'translateX(-50%)',width:5,height:5,borderRadius:'50%',background:'#2d6a4f',animation:'navDotIn .3s ease',boxShadow:'0 0 6px rgba(45,106,79,0.4)'}}/>}
+</>
+)}
+</button>
+);
+})}
+</div>
+</div>
+);
 }
 function ChatModal({ open, onClose }) {
   const [msgs, setMsgs] = useState([{ f: 'b', t: "Hi! I can help you with composting tips, waste disposal guidance, or anything about WasteWise. What would you like to know?" }]);
@@ -375,16 +404,28 @@ function ScannerScreen({ onNav, onChat, fileRef, onCapture }) {
         <button onClick={onChat} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg"><I n="forum" s={{ color: '#2D6A4F', fontSize: '20px' }} /></button>
       </div>
       
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-black/40 backdrop-blur rounded-t-[24px] flex items-center justify-around px-2 pointer-events-auto">
-        {[{id:'home',i:'home',l:'HOME'},{id:'scanner',i:'center_focus_strong',l:'SCAN',a:true},{id:'journey',i:'bar_chart',l:'IMPACT'},{id:'leaderboard',i:'leaderboard',l:'LEADERBOARD'}].map(it=>(
-          <button key={it.l} onClick={()=>onNav(it.id)} className="flex flex-col items-center gap-0.5">
-            <I n={it.i} f={!!it.a} s={{color:it.a?'#fff':'rgba(255,255,255,.5)',fontSize:'22px'}}/>
-            <span className="text-[10px] uppercase tracking-wider font-medium" style={{color:it.a?'#fff':'rgba(255,255,255,.5)'}}>{it.l}</span>
+      <div className="absolute bottom-0 left-0 right-0 pointer-events-auto" style={{padding:'0 8px 10px'}}>
+      <div style={{background:'rgba(255,255,255,0.15)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderRadius:26,border:'1px solid rgba(255,255,255,0.2)',boxShadow:'0 8px 32px rgba(0,0,0,0.15)'}} className="flex items-center justify-around py-2 px-1">
+        {[{id:'home',i:'home',l:'Home'},{id:'scanner',i:'center_focus_strong',l:'Scan',a:true},{id:'journey',i:'bar_chart',l:'Impact'},{id:'leaderboard',i:'leaderboard',l:'Board'}].map(it=>{
+        const isScan=it.id==='scanner';
+        return(
+          <button key={it.l} onClick={()=>onNav(it.id)} className="flex flex-col items-center" style={{flex:1,minWidth:0}}>
+            {isScan?(
+              <div style={{width:52,height:52,borderRadius:16,background:'linear-gradient(135deg,#2d6a4f,#40916c)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 16px rgba(45,106,79,0.4)',transform:'translateY(-8px)',position:'relative'}}>
+                <div style={{position:'absolute',inset:-4,borderRadius:20,border:'2px solid rgba(255,255,255,0.3)',animation:'navPulse 2s ease-in-out infinite'}}/>
+                <I n={it.i} f s={{color:'#fff',fontSize:'26px'}}/>
+              </div>
+            ):(
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'6px 0'}}>
+                <I n={it.i} f={!!it.a} s={{color:it.a?'#fff':'rgba(255,255,255,.5)',fontSize:'22px'}}/>
+                <span style={{fontSize:10,fontWeight:it.a?700:500,color:it.a?'#fff':'rgba(255,255,255,.5)'}}>{it.l}</span>
+              </div>
+            )}
           </button>
         );
         })}
       </div>
-      </div>
+    </div>
     </div>
   );
 }
@@ -719,7 +760,7 @@ function App() {
     e.target.value = '';
   };
   const showNav = scr !== 'scanner' && scr !== 'upload-preview';
-  const topBack = scr === 'upload-preview' ? 'scanner' : 'scanner';
+  const topBack = scr === 'upload-preview' ? 'scanner' : (scr === 'store' ? 'home' : 'scanner');
 
   if (authLoading) {
     return (
@@ -746,7 +787,7 @@ function App() {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#f0f4f8' }}>
       <div className="phone">
         <input type="file" accept="image/*" ref={fileRef} onChange={handleFile} style={{display:'none'}}/>
-        {scr!=='scanner'&&<TopBar screen={scr} onBack={()=>nav(topBack)}/>}
+        {scr!=='scanner'&&<TopBar screen={scr} onBack={()=>nav(topBack)} onNav={nav}/>}
         <div className="absolute inset-0 overflow-y-auto" style={{top:scr==='scanner'?0:0,bottom:0}}>
           {scr==='home'&&<HomeScreen onNav={nav} lang={lang} setLang={setLang} user={user} userStats={userStats}/>}
           {scr==='scanner'&&<ScannerScreen onNav={nav} onChat={()=>setChat(true)} fileRef={fileRef} onCapture={(url)=>{setImgUrl(url);setScr('upload-preview');}}/>}
@@ -755,6 +796,7 @@ function App() {
           {scr==='leaderboard'&&<LeaderboardScreen user={user} userStats={userStats}/>}
           {scr==='journey'&&<JourneyScreen user={user} userStats={userStats} onNav={nav}/>}
           {scr==='vendors'&&<VendorsScreen />}
+          {scr==='store'&&<StoreScreen onNav={nav} userStats={userStats}/>}
         </div>
         {showNav && <BottomNav active={scr === 'result' ? 'scanner' : scr} onNav={nav} />}
         {scr === 'home' && <button onClick={() => setChat(true)} className="absolute z-20 flex items-center gap-2 px-4 py-3 rounded-[16px] text-white" style={{ background: '#2d6a4f', bottom: 96, right: 16 }}><I n="chat" s={{ fontSize: '20px' }} /><span className="text-sm font-medium">Ask WasteWise</span></button>}
