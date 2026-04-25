@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { fbAuth, GoogleAuthProvider, signInWithPopup } from './firebase.js';
+import { fbAuth, GoogleAuthProvider, signInWithPopup, firebaseEnabled } from './firebase.js';
 import { apiRequest } from './utils/api.js';
 
 
@@ -54,11 +54,15 @@ function LoginScreen({ onLogin }) {
   };
 
   const continueAsDemo = () => {
-    onLogin({
+    const demoUser = {
       uid: 'demo-user',
       displayName: 'Demo User',
-      email: 'demo@example.com'
-    });
+      email: 'demo@wastewise.local',
+      photoURL: null,
+      isDemo: true
+    };
+    localStorage.setItem('wastewise-demo-user', JSON.stringify(demoUser));
+    onLogin(demoUser);
   };
 
   return (
@@ -66,14 +70,21 @@ function LoginScreen({ onLogin }) {
       style={{background: 'linear-gradient(135deg, #1a3a1a 0%, #2d6a4f 100%)', borderRadius: 'inherit'}}>
       <div className="text-6xl mb-4">🌱</div>
       <h1 className="text-3xl font-black text-white mb-2">WasteWise</h1>
-      <p className="text-white/70 text-sm text-center mb-10">
-        Turn your waste into impact. Every item sorted matters.
+      <p className="text-white/70 text-sm text-center mb-6">
+        Local demo mode available — no Firebase login required.
       </p>
       <div className="w-full space-y-3">
-        <button onClick={signInWithGoogle} disabled={loading}
-          className="bg-white text-[#151c22] rounded-[20px] w-full h-14 font-bold text-base flex items-center justify-center gap-3">
-          {loading ? '...' : '🔵 Continue with Google'}
-        </button>
+        {firebaseEnabled ? (
+          <button onClick={signInWithGoogle} disabled={loading}
+            className="bg-white text-[#151c22] rounded-[20px] w-full h-14 font-bold text-base flex items-center justify-center gap-3">
+            {loading ? '...' : '🔵 Continue with Google'}
+          </button>
+        ) : (
+          <button disabled
+            className="bg-white/50 text-[#151c22]/50 cursor-not-allowed rounded-[20px] w-full h-14 font-bold text-xs flex items-center justify-center gap-3">
+            Google login unavailable in local demo
+          </button>
+        )}
         <button onClick={continueAsDemo} disabled={loading}
           className="bg-transparent border-2 border-white/40 text-white rounded-[20px] w-full h-14 font-bold text-base flex items-center justify-center hover:bg-white/10 transition-colors">
           Continue as Demo User
@@ -740,14 +751,25 @@ function App() {
   const fileRef = useRef(null);
 
   useEffect(() => {
-    const unsub = fbAuth.onAuthStateChanged(u => {
-      if (u) {
-        handleUserLogin(u);
-      } else if (!user) { // Only set to null if not using demo user
-        setAuthLoading(false);
-      }
-    });
-    return unsub;
+    // Check local storage first
+    const savedDemoUser = localStorage.getItem('wastewise-demo-user');
+    if (savedDemoUser) {
+      handleUserLogin(JSON.parse(savedDemoUser));
+      return;
+    }
+
+    if (firebaseEnabled && fbAuth) {
+      const unsub = fbAuth.onAuthStateChanged(u => {
+        if (u) {
+          handleUserLogin(u);
+        } else if (!user) { // Only set to null if not using demo user
+          setAuthLoading(false);
+        }
+      });
+      return unsub;
+    } else {
+      setAuthLoading(false);
+    }
   }, []);
 
   const handleUserLogin = (u) => {
