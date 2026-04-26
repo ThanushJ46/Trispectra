@@ -469,7 +469,7 @@ graph LR
 
 ## 👥 Team Trispectra
 
-Built with ♻️ and 💻 during a national-level hackathon.
+Built with ♻️ and 💻 during a core unleashed hackathon.
 
 ---
 
