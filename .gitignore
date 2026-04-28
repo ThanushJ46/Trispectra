@@ -11,6 +11,8 @@ env/
 
 # Environment
 .env
+.env.local
+.env.*.local
 
 # Node
 node_modules/
@@ -26,9 +28,6 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
-
 serviceAccountKey.json
 
-
 *.bak
-
